@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+    .card {
+        background-color: theme('colors.white');
+        border-radius: theme('borderRadius.lg');
+        padding: theme('spacing.6');
+        box-shadow: theme('boxShadow.xl');
+      }
+}
+
+:root {
+    --primary-color: #0070f3;
+    --white-color: #FFF;
+}
+
 html {
     font-size: 62.5%;
 }
@@ -20,5 +34,8 @@ code {
     monospace;
 }
 
+/* Components */
+@import url('./styles/components/button.css');
+@import url('./styles/components/form.css');
 @import url('./styles/components/layout1.css');
 @import url('./styles/components/profile-header.css');

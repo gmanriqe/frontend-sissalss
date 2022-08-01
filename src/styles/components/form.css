@@ -1,0 +1,16 @@
+.form-group {
+    margin-bottom: 1rem;
+}
+.form-control  {
+    color: #777;
+    background-color: #fff;
+    border-radius: 0.25rem;
+    width: 100%;
+    padding: 0.25rem 0.75rem;
+    height: 38px;
+    font-size: 16px;
+    border: 1px solid rgba(0,0,0,.15);
+    box-shadow: none;
+    outline: 0;
+    transition: all .3s;
+}

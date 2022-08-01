@@ -10,7 +10,7 @@ import { Layout1, Layout2 } from '../views/Layout';
 const RoutesComponent = () => (
     <Routes>
         <Route element={<Layout1 />} >
-            <Route path="/cliente" element={<Client />} />
+            <Route path="/clientes" element={<Client />} />
             <Route path="/cita" element={<Quote />} />
             <Route path="*" element={<div>404</div>} />
         </Route>

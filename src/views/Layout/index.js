@@ -28,7 +28,7 @@ export const Layout1 = () => {
 
 export const Layout2 = () => {
     return (
-        <div>
+        <div className='w-full h-screen flex justify-center items-center'>
             <Outlet />
         </div>
     );
