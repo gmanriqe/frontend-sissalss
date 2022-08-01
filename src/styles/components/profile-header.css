@@ -1,0 +1,15 @@
+.profile-header .profile-header__image {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    font-family: Inter var,Roboto,"Helvetica",Arial,sans-serif;
+    font-size: 2rem;
+    line-height: 1;
+    border-radius: 50%;
+    overflow: hidden;
+    user-select: none;
+}
