@@ -1,6 +1,8 @@
+import { useContext } from "react";
 import { Formik, Form, Field } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { APILogin } from '../../api/login';
+import { AuthContext } from '../../context/AuthContent';
 
 const validateMainForm = (values) => {
     const errors = {};
@@ -19,12 +21,15 @@ const validateMainForm = (values) => {
 const Login = () => {
     const navigate = useNavigate();
 
+    const [isLogged, setIsLogged] = useContext(AuthContext);
+
     const handleSubmit = (values) => {
         APILogin(values, (response) => {
             let resultData = response.data?.token
             
             if(resultData){
                 localStorage.setItem('token', resultData)
+                setIsLogged(true)
                 navigate('/clientes')
             }
         })
