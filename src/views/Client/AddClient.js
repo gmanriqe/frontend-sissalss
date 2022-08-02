@@ -1,3 +1,4 @@
+import {useState} from 'react';
 import {
     Formik,
     Form
@@ -8,27 +9,34 @@ import ErrorsMessage from '../../components/ErrorMessage';
 
 const breadcrumbs = [{ names: 'Clientes', link: '/clientes' }, { names: 'Nuevo', link: '/clientes/nuevo' }]
 
+// Options for select
 const options = [
-    { value: '', label: 'SELECCIONE..', disabled: true },
+    { value: '', label: 'SELECCIONE..'},
     { value: 'chocolate', label: 'Chocolate' },
     { value: 'strawberry', label: 'Strawberry' },
     { value: 'vanilla', label: 'Vanilla' }
 ]
 
-const SelectForm = () => (
-    <Select options={options} className='form-control' name='type_document' />
-)
+/**
+ * Handle submit form
+ */
+const handleSubmit = (values, formData) => {
+    alert('submit')
+}
 
-const validateMainForm = (values) => {
+/**
+ * Validate form
+ */
+ const validateMainForm = (values) => {
     const errors = {};
-    console.log(values.first_name.trim())
+    console.log(values)
     if (values.first_name.trim().length === 0) {
         errors.first_name = 'El nombre es requerido'
     }
     if (values.last_name.trim().length === 0) {
         errors.last_name = 'El apellido es requerido'
     }
-    if (values.type_document === '') {
+    if (values.type_document.value === '') {
         errors.type_document = 'El tipo de documento es requerido'
     }
     if (values.nro_document.trim().length === 0) {
@@ -52,11 +60,11 @@ const validateMainForm = (values) => {
     return errors
 }
 
-const handleSubmit = (values) => {
-    console.log(values)
-}
-
 const AddClient = () => {
+    const handleChangetypeDocument = (selectedOption, formData) => {
+        formData.values.type_document = selectedOption
+    }
+
     return (
         <div className='main main-addclient'>
             <PageHeader title={'NUEVO CLIENTE'} breadcrumbs={breadcrumbs} />
@@ -66,7 +74,7 @@ const AddClient = () => {
                         initialValues={{
                             first_name: '',
                             last_name: '',
-                            type_document: '',
+                            type_document: { value: '', label: 'SELECCIONE..'},
                             nro_document: '',
                             birth_date: '',
                             phone: '',
@@ -79,7 +87,6 @@ const AddClient = () => {
                     >
                         {(formData) => (
                             <Form className='grid grid-cols-2 gap-20'>
-                                {console.log(formData)}
                                 <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='nombre'>Nombres</label>
                                     <input
@@ -110,8 +117,15 @@ const AddClient = () => {
                                 </div>
                                 <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='tipo-documento'>Tipo documento</label>
-                                    {/* <select className='form-control' id='tipo-documento' name='type_document'></select> */}
-                                    <SelectForm />
+                                    <Select
+                                        id='tipo-documento'
+                                        className='form-control'
+                                        name='type_document'
+                                        placeholder=''
+                                        options={options}
+                                        onChange={(val) => handleChangetypeDocument(val, formData)}
+                                        defaultValue={formData.values.type_document}
+                                    />
                                     {
                                         formData.touched.type_document && formData.errors.type_document ? (
                                             <ErrorsMessage errors={formData.errors.type_document} />
