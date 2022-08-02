@@ -16,7 +16,10 @@
   --body-color: #f1f5f9;
   --border-color: #e2e8f0;
   --alter-color: #4f46e5;
+
+  --message-error: #ff0000;
   --white-color: #fff;
+  --black-color: #000;
 }
 
 /* Config */

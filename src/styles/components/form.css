@@ -1,6 +1,8 @@
 .form-group {
 }
-.form-control  {
+input.form-control,
+select.form-control,
+textarea.form-control  {
     color: #777;
     background-color: #fff;
     border-radius: 0.25rem;
@@ -16,5 +18,9 @@
 textarea.form-control {
     height: 60px;
     resize: none;
-
+}
+.message-error.error{
+    display: block;
+    font-size: 11px;
+    color: var(--message-error);
 }
