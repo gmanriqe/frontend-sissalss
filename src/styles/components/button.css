@@ -17,7 +17,8 @@
     color: var(--white-color);
 }
 
-button.btn-rds {
+button.btn-rds,
+a.btn-rds {
     display: inline-flex;
     align-items: center;
     justify-content: center;

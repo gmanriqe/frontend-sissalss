@@ -26,8 +26,8 @@ const Login = () => {
     const handleSubmit = (values) => {
         APILogin(values, (response) => {
             let resultData = response.data?.token
-            
-            if(resultData){
+
+            if (resultData) {
                 localStorage.setItem('token', resultData)
                 setIsLogged(true)
                 navigate('/clientes')
@@ -54,7 +54,8 @@ const Login = () => {
                                 <Field
                                     type='text'
                                     className='form-control'
-                                    name='username' />
+                                    name='username'
+                                />
                                 {
                                     formData.touched.username && formData.errors.username ? (
                                         <span className='message-error error'>{formData.errors.username}</span>
@@ -66,7 +67,8 @@ const Login = () => {
                                 <Field
                                     type='password'
                                     className='form-control'
-                                    name='password' />
+                                    name='password'
+                                />
                                 {
                                     formData.touched.password && formData.errors.password ? (
                                         <span className='message-error error'>{formData.errors.password}</span>
