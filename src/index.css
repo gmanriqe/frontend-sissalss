@@ -3,39 +3,48 @@
 @tailwind utilities;
 
 @layer components {
-    .card {
-        background-color: theme('colors.white');
-        border-radius: theme('borderRadius.lg');
-        padding: theme('spacing.6');
-        box-shadow: theme('boxShadow.xl');
-      }
+  .card {
+    background-color: theme("colors.white");
+    border-radius: theme("borderRadius.lg");
+    padding: theme("spacing.6");
+    box-shadow: theme("boxShadow.xl");
+  }
 }
 
 :root {
-    --primary-color: #0070f3;
-    --white-color: #FFF;
+  --primary-color: #0070f3;
+  --body-color: #f1f5f9;
+  --border-color: #e2e8f0;
+  --alter-color: #4f46e5;
+  --white-color: #fff;
 }
 
+/* Config */
+@import url("./styles/config/fonts.css");
+/* Layout */
+@import url("./styles/layout/general.css");
+/* Components */
+@import url("./styles/components/breadcrumbs.css");
+@import url("./styles/components/button.css");
+@import url("./styles/components/form.css");
+@import url("./styles/components/layout1.css");
+@import url("./styles/components/profile-header.css");
+
 html {
-    font-size: 62.5%;
+  font-size: 62.5%;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: Inter var, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
+  font-size: 14px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
-
-/* Components */
-@import url('./styles/components/button.css');
-@import url('./styles/components/form.css');
-@import url('./styles/components/layout1.css');
-@import url('./styles/components/profile-header.css');

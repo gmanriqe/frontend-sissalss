@@ -1,0 +1,25 @@
+/* Breadcrumb */
+.page-breadcrumb ul{
+    display: flex;
+}
+.page-breadcrumb ul li {
+    position: relative;
+}
+.page-breadcrumb ul li:not(:last-child)::after{
+    content: '';
+    display: inline-block;
+    background-color: var(--alter-color);
+    width: 1px;
+    height: 60%;
+    position: absolute;
+    top: 50%;
+    right: 9px;
+    transform: translateY(-50%) rotate(20deg);
+}
+.page-breadcrumb ul li:not(:last-child){
+    padding-right: 20px;
+}
+.page-breadcrumb ul a {
+    font-weight: 400;
+    color: var(--alter-color);
+}
