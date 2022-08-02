@@ -1,0 +1,10 @@
+.body-bg {
+  background-color: var(--body-color);
+}
+/* Page Header */
+.page-header {
+    background-color: var(--white-color);
+    border-bottom-width: 1px;
+    border-style: solid;
+    border-color: var(--border-color);
+}

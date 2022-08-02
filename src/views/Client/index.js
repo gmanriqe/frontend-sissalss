@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
     createColumnHelper, flexRender, getCoreRowModel, useReactTable
 } from '@tanstack/react-table'
@@ -30,7 +31,7 @@ const columns = [
     }),
 ]
 
-const Client = () => {
+const Clients = () => {
     const [data, setData] = useState([])
 
     useEffect(() => {
@@ -47,102 +48,116 @@ const Client = () => {
     })
 
     return (
-        <div>
-            <h1>Cliente</h1>
-            <div className="overflow-x-auto relative">
-                <table className='w-full table-fixed border-collapse border border-slate-400'>
-                    <thead className='text-xs text-gray-700 uppercase bg-gray-50'>
-                        {table.getHeaderGroups().map(headerGroup => (
-                            <tr className='border border-slate-300' key={headerGroup.id}>
-                                {headerGroup.headers.map(header => (
-                                    <th key={header.id}>
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                    </thead>
-                    <tbody>
-                        {table.getRowModel().rows.map(row => (
-                            <tr className='border border-slate-300' key={row.id}>
-                                {row.getVisibleCells().map(cell => (
-                                    <td key={cell.id} >
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                <div className="flex items-center gap-2">
-                    <button
-                        className="border rounded p-1"
-                        onClick={() => table.setPageIndex(0)}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        {'<<'}
-                    </button>
-                    <button
-                        className="border rounded p-1"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        {'<'}
-                    </button>
-                    <button
-                        className="border rounded p-1"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        {'>'}
-                    </button>
-                    <button
-                        className="border rounded p-1"
-                        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        {'>>'}
-                    </button>
-                    <span className="flex items-center gap-1">
-                        <div>Page</div>
-                        <strong>
-                            {table.getState().pagination.pageIndex + 1} of{' '}
-                            {table.getPageCount()}
-                        </strong>
-                    </span>
-                    <span className="flex items-center gap-1">
-                        | Go to page:
-                        <input
-                            type="number"
-                            defaultValue={table.getState().pagination.pageIndex + 1}
+        <div className='main main-clients'>
+            <div className='page-header'>
+                <div className='mx-auto p-20 container '>
+                    <nav className='page-breadcrumb'>
+                        <ul>
+                            <li><Link to='/clientes'>Clientes</Link></li>
+                        </ul>
+                    </nav>
+                    <h1 className='text-3xl md:text-4xl font-extrabold mt-8'>CLIENTES</h1>
+                </div>
+            </div>
+            <div className='mx-auto p-20 container'>
+                <div className='flex justify-end mb-10'>
+                    <Link to='/clientes/nuevo' className='btn-rds'>Nuevo</Link>
+                </div>
+                <div className="card p-20 overflow-x-auto relative">
+                    <table className='w-full table-fixed border-collapse border border-slate-400'>
+                        <thead className='text-xs text-gray-700 uppercase bg-gray-50'>
+                            {table.getHeaderGroups().map(headerGroup => (
+                                <tr className='border border-slate-300' key={headerGroup.id}>
+                                    {headerGroup.headers.map(header => (
+                                        <th key={header.id}>
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+                                        </th>
+                                    ))}
+                                </tr>
+                            ))}
+                        </thead>
+                        <tbody>
+                            {table.getRowModel().rows.map(row => (
+                                <tr className='border border-slate-300' key={row.id}>
+                                    {row.getVisibleCells().map(cell => (
+                                        <td key={cell.id} >
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    <div className="flex items-center gap-2">
+                        <button
+                            className="border rounded p-1"
+                            onClick={() => table.setPageIndex(0)}
+                            disabled={!table.getCanPreviousPage()}
+                        >
+                            {'<<'}
+                        </button>
+                        <button
+                            className="border rounded p-1"
+                            onClick={() => table.previousPage()}
+                            disabled={!table.getCanPreviousPage()}
+                        >
+                            {'<'}
+                        </button>
+                        <button
+                            className="border rounded p-1"
+                            onClick={() => table.nextPage()}
+                            disabled={!table.getCanNextPage()}
+                        >
+                            {'>'}
+                        </button>
+                        <button
+                            className="border rounded p-1"
+                            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                            disabled={!table.getCanNextPage()}
+                        >
+                            {'>>'}
+                        </button>
+                        <span className="flex items-center gap-1">
+                            <div>Page</div>
+                            <strong>
+                                {table.getState().pagination.pageIndex + 1} of{' '}
+                                {table.getPageCount()}
+                            </strong>
+                        </span>
+                        <span className="flex items-center gap-1">
+                            | Go to page:
+                            <input
+                                type="number"
+                                defaultValue={table.getState().pagination.pageIndex + 1}
+                                onChange={e => {
+                                    const page = e.target.value ? Number(e.target.value) - 1 : 0
+                                    table.setPageIndex(page)
+                                }}
+                                className="border p-1 rounded w-16"
+                            />
+                        </span>
+                        <select
+                            value={table.getState().pagination.pageSize}
                             onChange={e => {
-                                const page = e.target.value ? Number(e.target.value) - 1 : 0
-                                table.setPageIndex(page)
+                                table.setPageSize(Number(e.target.value))
                             }}
-                            className="border p-1 rounded w-16"
-                        />
-                    </span>
-                    <select
-                        value={table.getState().pagination.pageSize}
-                        onChange={e => {
-                            table.setPageSize(Number(e.target.value))
-                        }}
-                    >
-                        {[10, 20, 30, 40, 50].map(pageSize => (
-                            <option key={pageSize} value={pageSize}>
-                                Show {pageSize}
-                            </option>
-                        ))}
-                    </select>
+                        >
+                            {[10, 20, 30, 40, 50].map(pageSize => (
+                                <option key={pageSize} value={pageSize}>
+                                    Show {pageSize}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
             </div>
         </div >
     )
 }
 
-export default Client
+export default Clients

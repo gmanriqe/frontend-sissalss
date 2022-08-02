@@ -1,5 +1,4 @@
 .form-group {
-    margin-bottom: 1rem;
 }
 .form-control  {
     color: #777;
@@ -13,4 +12,9 @@
     box-shadow: none;
     outline: 0;
     transition: all .3s;
+}
+textarea.form-control {
+    height: 60px;
+    resize: none;
+
 }
