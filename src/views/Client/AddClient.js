@@ -60,9 +60,16 @@ const handleSubmit = (values, formData) => {
     return errors
 }
 
+/**
+ * Main component
+ */
 const AddClient = () => {
-    const handleChangetypeDocument = (selectedOption, formData) => {
-        formData.values.type_document = selectedOption
+    const handleChangetypeDocument = (formData, selectedOption) => {
+        formData.setFieldValue('type_document', selectedOption)
+    }
+
+    const handleOnBlurTypeDocument = (formData) => {
+        formData.setFieldTouched('type_document', true)
     }
 
     return (
@@ -87,6 +94,7 @@ const AddClient = () => {
                     >
                         {(formData) => (
                             <Form className='grid grid-cols-2 gap-20'>
+                                {console.log(formData)}
                                 <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='nombre'>Nombres</label>
                                     <input
@@ -123,7 +131,8 @@ const AddClient = () => {
                                         name='type_document'
                                         placeholder=''
                                         options={options}
-                                        onChange={(val) => handleChangetypeDocument(val, formData)}
+                                        onChange={(val) => handleChangetypeDocument(formData, val)}
+                                        onBlur={() => handleOnBlurTypeDocument(formData)}
                                         defaultValue={formData.values.type_document}
                                     />
                                     {
