@@ -1,8 +1,9 @@
-import {useState} from 'react';
+// import {useState} from 'react';
 import {
     Formik,
     Form
 } from 'formik';
+import * as Yup from 'yup';
 import Select from 'react-select'
 import PageHeader from '../../components/PageHeader';
 import ErrorsMessage from '../../components/ErrorMessage';
@@ -11,53 +12,50 @@ const breadcrumbs = [{ names: 'Clientes', link: '/clientes' }, { names: 'Nuevo',
 
 // Options for select
 const options = [
-    { value: '', label: 'SELECCIONE..'},
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' }
+    { label: 'SELECCIONE..', value: '', },
+    { label: 'Chocolate', value: 'chocolate', },
+    { label: 'Strawberry', value: 'strawberry' },
+    { label: 'Vanilla', value: 'vanilla' }
 ]
+
+const options2 = [
+    { label: 'SELECCIONE..', value: '', },
+    { label: 'AMA DE CASA', value: 'AMA DE CASA', },
+    { label: 'ENFERMERA', value: 'ENFERMERA' },
+    { label: 'MEDICO', value: 'MEDICO' },
+    { label: 'OTROS', value: 'OTROS' }
+]
+
+/**
+ * Validate form
+ */
+const FormSchema = Yup.object().shape({
+    first_name: Yup.string()
+        .required('El nombre es obligatorio*'),
+    last_name: Yup.string()
+        .required('El apellido es obligatorio*'),
+    type_document: Yup.object().shape({
+        value: Yup.string().required('El tipo de documento es obligatorio*'),
+    }),
+    nro_document: Yup.string()
+        .required('El nro. documento es obligatorio*'),
+    birth_date: Yup.string()
+        .required('La fec. nacimiento es obligatoria*'),
+    phone: Yup.string()
+        .required('El teléfono es obligatoria*'),
+    email: Yup.string()
+        .required('El correo es obligatoria*'),
+    occupation: Yup.string()
+        .required('La correo es obligatoria*'),
+    observation: Yup.string()
+        .required('La observación es obligatoria*'),
+})
 
 /**
  * Handle submit form
  */
 const handleSubmit = (values, formData) => {
     alert('submit')
-}
-
-/**
- * Validate form
- */
- const validateMainForm = (values) => {
-    const errors = {};
-    console.log(values)
-    if (values.first_name.trim().length === 0) {
-        errors.first_name = 'El nombre es requerido'
-    }
-    if (values.last_name.trim().length === 0) {
-        errors.last_name = 'El apellido es requerido'
-    }
-    if (values.type_document.value === '') {
-        errors.type_document = 'El tipo de documento es requerido'
-    }
-    if (values.nro_document.trim().length === 0) {
-        errors.nro_document = 'El nro de documento es requerido'
-    }
-    if (values.birth_date.trim().length === 0) {
-        errors.birth_date = 'La fecha de nacimiento es requerida'
-    }
-    if (values.phone.trim().length === 0) {
-        errors.phone = 'El teléfono es requerido'
-    }
-    if (values.email.trim().length === 0) {
-        errors.email = 'El email es requerido'
-    }
-    if (values.occupation.trim().length === 0) {
-        errors.occupation = 'La ocupación es requerido'
-    }
-    if (values.observation.trim().length === 0) {
-        errors.observation = 'La observación es requerido'
-    }
-    return errors
 }
 
 /**
@@ -81,7 +79,7 @@ const AddClient = () => {
                         initialValues={{
                             first_name: '',
                             last_name: '',
-                            type_document: { value: '', label: 'SELECCIONE..'},
+                            type_document: { value: '', label: 'SELECCIONE..' },
                             nro_document: '',
                             birth_date: '',
                             phone: '',
@@ -89,7 +87,7 @@ const AddClient = () => {
                             occupation: '',
                             observation: '',
                         }}
-                        validate={validateMainForm}
+                        validationSchema={FormSchema}
                         onSubmit={handleSubmit}
                     >
                         {(formData) => (
@@ -136,8 +134,8 @@ const AddClient = () => {
                                         defaultValue={formData.values.type_document}
                                     />
                                     {
-                                        formData.touched.type_document && formData.errors.type_document ? (
-                                            <ErrorsMessage errors={formData.errors.type_document} />
+                                        formData.errors.type_document?.value ? (
+                                            <ErrorsMessage errors={formData.errors.type_document?.value} />
                                         ) : null
                                     }
                                 </div>
