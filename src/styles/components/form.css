@@ -19,6 +19,11 @@ textarea.form-control {
     height: 60px;
     resize: none;
 }
+input[disabled].form-control{
+    background-color: var(--disabled);
+    border-color: var(--disabled-border);
+    cursor: not-allowed;
+}
 .message-error.error{
     display: block;
     font-size: 11px;

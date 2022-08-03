@@ -13,9 +13,8 @@ const breadcrumbs = [{ names: 'Clientes', link: '/clientes' }, { names: 'Nuevo',
 // Options for select
 const options = [
     { label: 'SELECCIONE..', value: '', },
-    { label: 'Chocolate', value: 'chocolate', },
-    { label: 'Strawberry', value: 'strawberry' },
-    { label: 'Vanilla', value: 'vanilla' }
+    { label: 'DNI', value: 'DNI', },
+    { label: 'LIBRETA ELECTORAL', value: 'LIBRETA ELECTORAL' },
 ]
 
 const options2 = [
@@ -27,7 +26,7 @@ const options2 = [
 ]
 
 /**
- * Validate form
+ * Validate with Yup
  */
 const FormSchema = Yup.object().shape({
     first_name: Yup.string()
@@ -56,7 +55,8 @@ const FormSchema = Yup.object().shape({
  * Handle submit form
  */
 const handleSubmit = (values, formData) => {
-    alert('submit')
+    console.log(formData)
+    console.log(values)
 }
 
 /**
@@ -108,6 +108,7 @@ const AddClient = () => {
                                         id='nombre'
                                         type='text'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
                                         {...formData.getFieldProps("first_name")}
                                     />
                                     {
@@ -122,6 +123,7 @@ const AddClient = () => {
                                         id='apellido'
                                         type='text'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
                                         {...formData.getFieldProps("last_name")}
                                     />
                                     {
@@ -135,6 +137,7 @@ const AddClient = () => {
                                     <Select
                                         id='tipo-documento'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
                                         name='type_document'
                                         placeholder=''
                                         options={options}
@@ -154,6 +157,8 @@ const AddClient = () => {
                                         id='nro-document'
                                         type='text'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
+                                        disabled='disabled'
                                         {...formData.getFieldProps("nro_document")}
                                     />
                                     {
@@ -168,6 +173,7 @@ const AddClient = () => {
                                         id='fecha_nacimiento'
                                         type='date'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
                                         {...formData.getFieldProps("birth_date")}
                                     />
                                     {
@@ -182,6 +188,7 @@ const AddClient = () => {
                                         id='telefono'
                                         type='text'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
                                         {...formData.getFieldProps("phone")}
                                     />
                                     {
@@ -196,6 +203,7 @@ const AddClient = () => {
                                         id='correo'
                                         type='email'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
                                         {...formData.getFieldProps("email")}
                                     />
                                     {
@@ -209,6 +217,7 @@ const AddClient = () => {
                                     <Select
                                         id='ocupacion'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
                                         name='occupation'
                                         placeholder=''
                                         options={options2}
@@ -228,6 +237,7 @@ const AddClient = () => {
                                         id='observacion'
                                         type='text'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
                                         {...formData.getFieldProps("observation")}
                                     ></textarea>
                                     {

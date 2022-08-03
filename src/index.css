@@ -17,6 +17,8 @@
   --border-color: #e2e8f0;
   --alter-color: #4f46e5;
 
+  --disabled: #f5f5f5;
+  --disabled-border: #ddd;
   --message-error: #ff0000;
   --white-color: #fff;
   --black-color: #000;
