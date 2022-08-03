@@ -45,8 +45,9 @@ const FormSchema = Yup.object().shape({
         .required('El teléfono es obligatoria*'),
     email: Yup.string()
         .required('El correo es obligatoria*'),
-    occupation: Yup.string()
-        .required('La correo es obligatoria*'),
+    occupation: Yup.object().shape({
+        value: Yup.string().required('La ocupación es obligatorio*'),
+    }),
     observation: Yup.string()
         .required('La observación es obligatoria*'),
 })
@@ -70,6 +71,14 @@ const AddClient = () => {
         formData.setFieldTouched('type_document', true)
     }
 
+    const handleChangeOccupation = (formData, selectedOption) => {
+        formData.setFieldValue('occupation', selectedOption)
+    }
+
+    const handleOnBlurOccupation = (formData) => {
+        formData.setFieldTouched('occupation', true)
+    }
+
     return (
         <div className='main main-addclient'>
             <PageHeader title={'NUEVO CLIENTE'} breadcrumbs={breadcrumbs} />
@@ -79,19 +88,19 @@ const AddClient = () => {
                         initialValues={{
                             first_name: '',
                             last_name: '',
-                            type_document: { value: '', label: 'SELECCIONE..' },
+                            type_document: { label: 'SELECCIONE..', value: '', },
                             nro_document: '',
                             birth_date: '',
                             phone: '',
                             email: '',
-                            occupation: '',
+                            occupation: { label: 'SELECCIONE..', value: '', },
                             observation: '',
                         }}
                         validationSchema={FormSchema}
                         onSubmit={handleSubmit}
                     >
                         {(formData) => (
-                            <Form className='grid grid-cols-2 gap-20'>
+                            <Form className='grid grid-cols-2 gap-20' noValidate>
                                 {console.log(formData)}
                                 <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='nombre'>Nombres</label>
@@ -197,10 +206,19 @@ const AddClient = () => {
                                 </div>
                                 <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='ocupacion'>Ocupación</label>
-                                    <select className='form-control' id='ocupacion' name='occupation'></select>
+                                    <Select
+                                        id='ocupacion'
+                                        className='form-control'
+                                        name='occupation'
+                                        placeholder=''
+                                        options={options2}
+                                        onChange={(val) => handleChangeOccupation(formData, val)}
+                                        onBlur={() => handleOnBlurOccupation(formData)}
+                                        defaultValue={formData.values.occupation}
+                                    />
                                     {
-                                        formData.touched.occupation && formData.errors.occupation ? (
-                                            <ErrorsMessage errors={formData.errors.occupation} />
+                                        formData.errors.occupation?.value ? (
+                                            <ErrorsMessage errors={formData.errors.occupation?.value} />
                                         ) : null
                                     }
                                 </div>
