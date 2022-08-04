@@ -1,19 +1,55 @@
-import { useEffect } from 'react';
+import { useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom'
 import avatar from '../../assets/images/avatar_profile.jpeg';
+import { MenuContext } from '../../context/MenuContent';
 
 const Header = () => {
+    const [menu, setMenu] = useContext(MenuContext);
+
     useEffect(() => {
         const $profile = document.getElementById('btn-profile')
+        // Profile
         $profile.addEventListener('click', () => {
             $profile.nextElementSibling.classList.toggle('show')
         })
-    });
 
+        if(!menu) {
+            const $menu = document.getElementById('menu-header')
+            if($menu) return
+            // New element (menu)
+            const $optsHeader = document.getElementById('opts-header')
+            const elem = document.createElement('button')
+            let attr = {
+                type: 'button',
+                class: 'w-40 h-40 p-0',
+                id: 'menu-header',
+                onclick: 'handleClick()'
+            }
+            Object.keys(attr).forEach(key => {
+                elem.setAttribute(key, attr[key])
+            })
+            elem.innerHTML = `<span class="material-icons">
+                drag_handle
+            </span>`
+            $optsHeader.appendChild(elem)
+        }
+    }, [menu]);
+
+    const handleClick = () => {
+        const $menu = document.getElementById('menu-header')
+        const $sidebar = document.getElementById('sidebar')
+
+        $sidebar.classList.remove('hide-menu')
+        $menu.remove()
+        console.log(menu)
+        setMenu(!menu)
+    }
+
+    window.handleClick = handleClick
     return (
         <header className='header flex z-20 shadow-md sticky top-0'>
             <div className='flex p-0 min-h-48 md:min-h-64'>
-                <div className='flex flex-1 px-16'></div>
+                <div className='flex items-center flex-1 px-16' id='opts-header'></div>
                 <div className='profile-header flex items-center px-8 h-full'>
                     <button type='button' className='profile-header__btn flex items-center min-h-40 min-w-40 px-0 md:px-16 py-0 md:py-6' id='btn-profile'>
                         <div className='hidden md:flex flex-col mx-4 items-end'>

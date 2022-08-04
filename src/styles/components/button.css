@@ -58,6 +58,11 @@ a.btn-rds {
     min-height: 40px;
     max-height: 40px;
 }
+button.btn-rds.btn-block,
+a.btn-rds.btn-block  {
+    width: 100%;
+}
+
 
 button.btn-rds:hover,
 a.btn-rds:hover {
