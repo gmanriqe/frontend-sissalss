@@ -39,18 +39,18 @@ const Login = () => {
         <main className='card w-full max-w-xs p-16'>
             <Formik
                 initialValues={{
-                    username: '',
-                    password: '',
+                    username: 'gmanriqe',
+                    password: 'gmanriqe',
                 }}
                 validate={validateMainForm}
                 onSubmit={handleSubmit}
             >
                 {(formData) => (
-                    <Form>
-                        <fieldset>
+                    <Form noValidate>
+                        <fieldset className='grid grid-cols-1 gap-10'>
                             <legend className='text-center font-bold text-2xl'>SISSA</legend>
                             <div className='form-group'>
-                                <label className='form-label'>USUARIO:</label>
+                                <label className='form-label'>Usuario</label>
                                 <Field
                                     type='text'
                                     className='form-control'
@@ -63,7 +63,7 @@ const Login = () => {
                                 }
                             </div>
                             <div className='form-group'>
-                                <label className='form-label'>CONTRASEÑA:</label>
+                                <label className='form-label'>Contraseña</label>
                                 <Field
                                     type='password'
                                     className='form-control'
@@ -76,7 +76,7 @@ const Login = () => {
                                 }
                             </div>
                             <div className='form-group text-center'>
-                                <button className='btn btn-primary' type='submit'>LOGIN</button>
+                                <button className='btn-rds btn-primary btn-block' type='submit'>Ingresar</button>
                             </div>
                         </fieldset>
                     </Form>)}

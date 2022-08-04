@@ -58,22 +58,10 @@ const FormSchema = Yup.object().shape({
         .required('La observación es obligatoria*'),
 })
 
-// check validity
-FormSchema
-    .validate({
-        first_name: '____',
-        type_document: '------',
-    })
-    .catch((err) => {
-        console.log(err.first_name); // ['Not a proper email']
-        console.log(err.type_document); // ValidationError
-    });
-
 /**
  * Handle submit form
  */
 const handleSubmit = (values, formData) => {
-    console.log(formData)
     console.log(values)
 }
 
@@ -141,7 +129,6 @@ const AddClient = () => {
                     >
                         {(formData) => (
                             <Form className='grid grid-cols-2 gap-20' noValidate>
-                                {console.log(formData)}
                                 <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='nombre'>Nombres</label>
                                     <input
