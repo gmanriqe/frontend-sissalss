@@ -3,8 +3,10 @@ import {
     Formik,
     Form
 } from 'formik';
-import * as Yup from 'yup';
+import * as Yup from 'yup'
 import Select from 'react-select'
+import Flatpickr from "react-flatpickr";
+import { Spanish } from 'flatpickr/dist/l10n/es.js'; // configure language for flatpickr
 import PageHeader from '../../components/PageHeader';
 import ErrorsMessage from '../../components/ErrorMessage';
 
@@ -79,14 +81,15 @@ const handleSubmit = (values, formData) => {
  * Main component
  */
 const AddClient = () => {
+    // Type document
     const handleChangetypeDocument = (formData, selectedOption) => {
         formData.setFieldValue('type_document', selectedOption)
 
         const $nroDocument = document.getElementById('nro-documento')
-        if(selectedOption.value !== '') {
+        if (selectedOption.value !== '') {
             $nroDocument.removeAttribute('disabled')
         } else {
-            $nroDocument.setAttribute('disabled','disabled')
+            $nroDocument.setAttribute('disabled', 'disabled')
         }
 
     }
@@ -95,6 +98,7 @@ const AddClient = () => {
         formData.setFieldTouched('type_document', true)
     }
 
+    // Ocupation
     const handleChangeOccupation = (formData, selectedOption) => {
         formData.setFieldValue('occupation', selectedOption)
     }
@@ -102,6 +106,18 @@ const AddClient = () => {
     const handleOnBlurOccupation = (formData) => {
         formData.setFieldTouched('occupation', true)
     }
+
+    // Brith date
+    const handleChangeBirthDate = (formData, val) => {
+        const $birthDate = val.length === 0 ? '' : new Date(new Date(val[0]).setHours(new Date().getHours(), new Date().getMinutes(), new Date().getSeconds()))
+        // formData.setFieldValue('birth_date', selectedDate)
+        formData.setFieldValue('birth_date', $birthDate)
+    }
+
+    const handleOnBlurBirthDate = (formData) => {
+        formData.setFieldTouched('birth_date', true)
+    }
+
 
     return (
         <div className='main main-addclient'>
@@ -193,13 +209,28 @@ const AddClient = () => {
                                 </div>
                                 <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='fecha_nacimiento'>Fecha de nacimiento</label>
-                                    <input
+                                    <Flatpickr
+                                        id='fecha_nacimiento'
+                                        className='form-control'
+                                        placeholder='SELECCIONE..'
+                                        style={{textTransform: 'uppercase'}}
+                                        options={{
+                                            enableTime: false,
+                                            dateFormat: 'l, d M',
+                                            locale: Spanish,
+                                            minDate: "today",
+                                            disableMobile: "true"
+                                        }}
+                                        onChange={(val) => handleChangeBirthDate(formData, val)}
+                                        onBlur={() => handleOnBlurBirthDate(formData)}
+                                    />
+                                    {/* <input
                                         id='fecha_nacimiento'
                                         type='date'
                                         className='form-control'
                                         style={{ textTransform: 'uppercase' }}
                                         {...formData.getFieldProps("birth_date")}
-                                    />
+                                    /> */}
                                     {
                                         formData.touched.birth_date && formData.errors.birth_date ? (
                                             <ErrorsMessage errors={formData.errors.birth_date} />
@@ -256,7 +287,7 @@ const AddClient = () => {
                                     }
                                 </div>
                                 <div className='form-group col-span-2'>
-                                    <label htmlFor='observacion'>Observacion</label>
+                                    <label htmlFor='observacion'>Observación</label>
                                     <textarea
                                         id='observacion'
                                         type='text'

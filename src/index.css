@@ -20,6 +20,7 @@
   --disabled: #f5f5f5;
   --disabled-border: #ddd;
   --message-error: #ff0000;
+  --input-color: #777;
   --white-color: #fff;
   --black-color: #000;
 }
@@ -29,6 +30,7 @@
 /* Layout */
 @import url("./styles/layout/general.css");
 /* Components */
+@import url("./styles/components/flatpickr.css");
 @import url("./styles/components/breadcrumbs.css");
 @import url("./styles/components/button.css");
 @import url("./styles/components/form.css");
