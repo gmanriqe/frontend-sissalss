@@ -33,23 +33,39 @@ const FormSchema = Yup.object().shape({
         .required('El nombre es obligatorio*'),
     last_name: Yup.string()
         .required('El apellido es obligatorio*'),
+    /*
     type_document: Yup.object().shape({
         value: Yup.string().required('El tipo de documento es obligatorio*'),
+
     }),
     nro_document: Yup.string()
         .required('El nro. documento es obligatorio*'),
+    */
     birth_date: Yup.string()
         .required('La fec. nacimiento es obligatoria*'),
     phone: Yup.string()
         .required('El teléfono es obligatoria*'),
     email: Yup.string()
         .required('El correo es obligatoria*'),
+    /*
     occupation: Yup.object().shape({
         value: Yup.string().required('La ocupación es obligatorio*'),
     }),
+    */
     observation: Yup.string()
         .required('La observación es obligatoria*'),
 })
+
+// check validity
+FormSchema
+    .validate({
+        first_name: '____',
+        type_document: '------',
+    })
+    .catch((err) => {
+        console.log(err.first_name); // ['Not a proper email']
+        console.log(err.type_document); // ValidationError
+    });
 
 /**
  * Handle submit form
@@ -65,6 +81,14 @@ const handleSubmit = (values, formData) => {
 const AddClient = () => {
     const handleChangetypeDocument = (formData, selectedOption) => {
         formData.setFieldValue('type_document', selectedOption)
+
+        const $nroDocument = document.getElementById('nro-documento')
+        if(selectedOption.value !== '') {
+            $nroDocument.removeAttribute('disabled')
+        } else {
+            $nroDocument.setAttribute('disabled','disabled')
+        }
+
     }
 
     const handleOnBlurTypeDocument = (formData) => {
@@ -152,9 +176,9 @@ const AddClient = () => {
                                     }
                                 </div>
                                 <div className='form-group col-span-2 md:col-span-1'>
-                                    <label htmlFor='nro-document'>Nro. documento</label>
+                                    <label htmlFor='nro-documento'>Nro. documento</label>
                                     <input
-                                        id='nro-document'
+                                        id='nro-documento'
                                         type='text'
                                         className='form-control'
                                         style={{ textTransform: 'uppercase' }}
