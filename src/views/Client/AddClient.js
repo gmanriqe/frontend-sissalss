@@ -1,9 +1,12 @@
-import {useState} from 'react';
+// import {useState} from 'react';
 import {
     Formik,
     Form
 } from 'formik';
+import * as Yup from 'yup'
 import Select from 'react-select'
+import Flatpickr from "react-flatpickr";
+import { Spanish } from 'flatpickr/dist/l10n/es.js'; // configure language for flatpickr
 import PageHeader from '../../components/PageHeader';
 import ErrorsMessage from '../../components/ErrorMessage';
 
@@ -11,66 +14,110 @@ const breadcrumbs = [{ names: 'Clientes', link: '/clientes' }, { names: 'Nuevo',
 
 // Options for select
 const options = [
-    { value: '', label: 'SELECCIONE..'},
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' }
+    { label: 'SELECCIONE..', value: '', },
+    { label: 'DNI', value: 'DNI', },
+    { label: 'LIBRETA ELECTORAL', value: 'LIBRETA ELECTORAL' },
 ]
+
+const options2 = [
+    { label: 'SELECCIONE..', value: '', },
+    { label: 'AMA DE CASA', value: 'AMA DE CASA', },
+    { label: 'ENFERMERA', value: 'ENFERMERA' },
+    { label: 'MEDICO', value: 'MEDICO' },
+    { label: 'OTROS', value: 'OTROS' }
+]
+
+/**
+ * Validate with Yup
+ */
+const FormSchema = Yup.object().shape({
+    first_name: Yup.string()
+        .required('El nombre es obligatorio*'),
+    last_name: Yup.string()
+        .required('El apellido es obligatorio*'),
+    /*
+    type_document: Yup.object().shape({
+        value: Yup.string().required('El tipo de documento es obligatorio*'),
+
+    }),
+    nro_document: Yup.string()
+        .required('El nro. documento es obligatorio*'),
+    */
+    birth_date: Yup.string()
+        .required('La fec. nacimiento es obligatoria*'),
+    phone: Yup.string()
+        .required('El teléfono es obligatoria*'),
+    email: Yup.string()
+        .required('El correo es obligatoria*'),
+    /*
+    occupation: Yup.object().shape({
+        value: Yup.string().required('La ocupación es obligatorio*'),
+    }),
+    */
+    observation: Yup.string()
+        .required('La observación es obligatoria*'),
+})
+
+// check validity
+FormSchema
+    .validate({
+        first_name: '____',
+        type_document: '------',
+    })
+    .catch((err) => {
+        console.log(err.first_name); // ['Not a proper email']
+        console.log(err.type_document); // ValidationError
+    });
 
 /**
  * Handle submit form
  */
 const handleSubmit = (values, formData) => {
-    alert('submit')
-}
-
-/**
- * Validate form
- */
- const validateMainForm = (values) => {
-    const errors = {};
+    console.log(formData)
     console.log(values)
-    if (values.first_name.trim().length === 0) {
-        errors.first_name = 'El nombre es requerido'
-    }
-    if (values.last_name.trim().length === 0) {
-        errors.last_name = 'El apellido es requerido'
-    }
-    if (values.type_document.value === '') {
-        errors.type_document = 'El tipo de documento es requerido'
-    }
-    if (values.nro_document.trim().length === 0) {
-        errors.nro_document = 'El nro de documento es requerido'
-    }
-    if (values.birth_date.trim().length === 0) {
-        errors.birth_date = 'La fecha de nacimiento es requerida'
-    }
-    if (values.phone.trim().length === 0) {
-        errors.phone = 'El teléfono es requerido'
-    }
-    if (values.email.trim().length === 0) {
-        errors.email = 'El email es requerido'
-    }
-    if (values.occupation.trim().length === 0) {
-        errors.occupation = 'La ocupación es requerido'
-    }
-    if (values.observation.trim().length === 0) {
-        errors.observation = 'La observación es requerido'
-    }
-    return errors
 }
 
 /**
  * Main component
  */
 const AddClient = () => {
+    // Type document
     const handleChangetypeDocument = (formData, selectedOption) => {
         formData.setFieldValue('type_document', selectedOption)
+
+        const $nroDocument = document.getElementById('nro-documento')
+        if (selectedOption.value !== '') {
+            $nroDocument.removeAttribute('disabled')
+        } else {
+            $nroDocument.setAttribute('disabled', 'disabled')
+        }
+
     }
 
     const handleOnBlurTypeDocument = (formData) => {
         formData.setFieldTouched('type_document', true)
     }
+
+    // Ocupation
+    const handleChangeOccupation = (formData, selectedOption) => {
+        formData.setFieldValue('occupation', selectedOption)
+    }
+
+    const handleOnBlurOccupation = (formData) => {
+        formData.setFieldTouched('occupation', true)
+    }
+
+    // Brith date
+    const handleChangeBirthDate = (formData, val) => {
+        const $birthDate = val.length === 0 ? '' : new Date(new Date(val[0]).setHours(new Date().getHours(), new Date().getMinutes(), new Date().getSeconds()))
+        // formData.setFieldValue('birth_date', selectedDate)
+        formData.setFieldValue('birth_date', $birthDate)
+    }
+
+    const handleOnBlurBirthDate = (formData) => {
+        formData.setFieldTouched('birth_date', true)
+    }
+
 
     return (
         <div className='main main-addclient'>
@@ -81,19 +128,19 @@ const AddClient = () => {
                         initialValues={{
                             first_name: '',
                             last_name: '',
-                            type_document: { value: '', label: 'SELECCIONE..'},
+                            type_document: { label: 'SELECCIONE..', value: '', },
                             nro_document: '',
                             birth_date: '',
                             phone: '',
                             email: '',
-                            occupation: '',
+                            occupation: { label: 'SELECCIONE..', value: '', },
                             observation: '',
                         }}
-                        validate={validateMainForm}
+                        validationSchema={FormSchema}
                         onSubmit={handleSubmit}
                     >
                         {(formData) => (
-                            <Form className='grid grid-cols-2 gap-20'>
+                            <Form className='grid grid-cols-2 gap-20' noValidate>
                                 {console.log(formData)}
                                 <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='nombre'>Nombres</label>
@@ -101,6 +148,7 @@ const AddClient = () => {
                                         id='nombre'
                                         type='text'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
                                         {...formData.getFieldProps("first_name")}
                                     />
                                     {
@@ -115,6 +163,7 @@ const AddClient = () => {
                                         id='apellido'
                                         type='text'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
                                         {...formData.getFieldProps("last_name")}
                                     />
                                     {
@@ -128,6 +177,7 @@ const AddClient = () => {
                                     <Select
                                         id='tipo-documento'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
                                         name='type_document'
                                         placeholder=''
                                         options={options}
@@ -136,17 +186,19 @@ const AddClient = () => {
                                         defaultValue={formData.values.type_document}
                                     />
                                     {
-                                        formData.touched.type_document && formData.errors.type_document ? (
-                                            <ErrorsMessage errors={formData.errors.type_document} />
+                                        formData.errors.type_document?.value ? (
+                                            <ErrorsMessage errors={formData.errors.type_document?.value} />
                                         ) : null
                                     }
                                 </div>
                                 <div className='form-group col-span-2 md:col-span-1'>
-                                    <label htmlFor='nro-document'>Nro. documento</label>
+                                    <label htmlFor='nro-documento'>Nro. documento</label>
                                     <input
-                                        id='nro-document'
+                                        id='nro-documento'
                                         type='text'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
+                                        disabled='disabled'
                                         {...formData.getFieldProps("nro_document")}
                                     />
                                     {
@@ -157,12 +209,28 @@ const AddClient = () => {
                                 </div>
                                 <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='fecha_nacimiento'>Fecha de nacimiento</label>
-                                    <input
+                                    <Flatpickr
+                                        id='fecha_nacimiento'
+                                        className='form-control'
+                                        placeholder='SELECCIONE..'
+                                        style={{textTransform: 'uppercase'}}
+                                        options={{
+                                            enableTime: false,
+                                            dateFormat: 'l, d M',
+                                            locale: Spanish,
+                                            minDate: "today",
+                                            disableMobile: "true"
+                                        }}
+                                        onChange={(val) => handleChangeBirthDate(formData, val)}
+                                        onBlur={() => handleOnBlurBirthDate(formData)}
+                                    />
+                                    {/* <input
                                         id='fecha_nacimiento'
                                         type='date'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
                                         {...formData.getFieldProps("birth_date")}
-                                    />
+                                    /> */}
                                     {
                                         formData.touched.birth_date && formData.errors.birth_date ? (
                                             <ErrorsMessage errors={formData.errors.birth_date} />
@@ -175,6 +243,7 @@ const AddClient = () => {
                                         id='telefono'
                                         type='text'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
                                         {...formData.getFieldProps("phone")}
                                     />
                                     {
@@ -189,6 +258,7 @@ const AddClient = () => {
                                         id='correo'
                                         type='email'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
                                         {...formData.getFieldProps("email")}
                                     />
                                     {
@@ -199,19 +269,30 @@ const AddClient = () => {
                                 </div>
                                 <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='ocupacion'>Ocupación</label>
-                                    <select className='form-control' id='ocupacion' name='occupation'></select>
+                                    <Select
+                                        id='ocupacion'
+                                        className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
+                                        name='occupation'
+                                        placeholder=''
+                                        options={options2}
+                                        onChange={(val) => handleChangeOccupation(formData, val)}
+                                        onBlur={() => handleOnBlurOccupation(formData)}
+                                        defaultValue={formData.values.occupation}
+                                    />
                                     {
-                                        formData.touched.occupation && formData.errors.occupation ? (
-                                            <ErrorsMessage errors={formData.errors.occupation} />
+                                        formData.errors.occupation?.value ? (
+                                            <ErrorsMessage errors={formData.errors.occupation?.value} />
                                         ) : null
                                     }
                                 </div>
                                 <div className='form-group col-span-2'>
-                                    <label htmlFor='observacion'>Observacion</label>
+                                    <label htmlFor='observacion'>Observación</label>
                                     <textarea
                                         id='observacion'
                                         type='text'
                                         className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
                                         {...formData.getFieldProps("observation")}
                                     ></textarea>
                                     {

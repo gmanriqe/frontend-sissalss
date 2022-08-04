@@ -48,7 +48,8 @@ a.btn-rds {
     border-radius: 4px;
     transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
     color: rgb(255,255,255);
-    background-color: #4f46e5;
+    /* background-color: #4f46e5; */
+    background-color: var(--primary-color);
     box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
     text-transform: none;
     box-shadow: none;
@@ -57,3 +58,8 @@ a.btn-rds {
     min-height: 40px;
     max-height: 40px;
 }
+
+button.btn-rds:hover,
+a.btn-rds:hover {
+    opacity: 0.9;
+} 
