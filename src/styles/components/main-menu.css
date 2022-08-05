@@ -1,0 +1,41 @@
+.main-menu {
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+}
+.main-menu h6 {
+    color: var(--alter-small-color);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    line-height: 20px;
+}
+.main-menu small {
+    font-size: 11px;
+    color: var(--secondary-color);
+    letter-spacing: .06px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+.main-menu .main-menu__header {
+    padding: 10px 16px;
+    line-height: 1;
+}
+.main-menu .main-menu__list li {
+    margin: 0 0 4px 0;
+}
+.main-menu .main-menu__list li a {
+    display: inline-block;
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 16px;
+    padding-left: 16px;
+    border-radius: 8px;
+}
+.main-menu .main-menu__list li a:hover  {
+    background-color: var(--hover-component-menu);
+}
+.main-menu .main-menu__list li span {
+    margin-right: 10px;
+}

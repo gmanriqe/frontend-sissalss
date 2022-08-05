@@ -8,6 +8,8 @@ import Clients from '../views/Client';
 import AddClient from "../views/Client/AddClient";
 import Quote from '../views/Quote';
 import Login from '../views/Login';
+import Staff from '../views/Staff';
+import AddStaff from "../views/Staff/AddStaff";
 
 const RoutesComponent = () => {
     const [isLogged] = useContext(AuthContext);
@@ -16,6 +18,8 @@ const RoutesComponent = () => {
         <Routes>
             <Route element={<Layout1 />} >
                 <Route path="/" element={isLogged ? (<Navigate to="/dashboard" />) : (<Navigate to="/login" />)} />
+                <Route path="/personal" element={isLogged ? (<Staff/>) : (<Navigate to='/login' />)} />
+                <Route path="/personal/nuevo" element={isLogged ? (<AddStaff/>) : (<Navigate to='/login' />)} />
                 <Route path="/clientes" element={isLogged ? (<Clients />) : (<Navigate to='/login' />)} />
                 <Route path="/clientes/nuevo" element={isLogged ? (<AddClient />) : (<Navigate to='/login' />)} />
                 <Route path="/cita" element={<Quote />} />
