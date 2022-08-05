@@ -73,3 +73,22 @@ button.btn-rds:hover,
 a.btn-rds:hover {
     opacity: 0.9;
 } 
+
+/* Button options */
+a.btn-opt,
+button.btn-opt{
+    display: block;
+    text-align: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+}
+a.btn-opt:hover,
+button.btn-opt:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+a.btn-opt span,
+button.btn-opt span {
+    color: rgba(0, 0, 0, 0.54);
+    line-height: 35px;
+}

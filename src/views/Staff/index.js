@@ -3,8 +3,11 @@ import { Link } from 'react-router-dom'
 import {
     createColumnHelper, flexRender, getCoreRowModel, useReactTable
 } from '@tanstack/react-table'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content';
 import { staff } from '../../mock/Staff'
 
+const MySwal = withReactContent(Swal);
 const columnHelper = createColumnHelper()
 const columns = [
     columnHelper.accessor('id', {
@@ -38,12 +41,26 @@ const Staff = () => {
         getCoreRowModel: getCoreRowModel(),
     })
 
-    const handlerXXX = (evt, ID) => {
-        const $opts = document.querySelector(`div[data-id=elem-${ID}`)
-        $opts.classList.toggle('show')
+    // Handler remove row
+    const handleSwalRemove = (evt, ID) => {
+        MySwal.fire({
+            text: `ID = ${ID}. DESEA ELIMINAR ESTE REGISTRO?.`,
+            icon: 'warning',
+            confirmButtonText: 'OK',
+            showCloseButton: true, // icon cerrar
+            allowOutsideClick: false, // click afuera no cierra
+            allowEscapeKey: true, // keyup esc cierra
+            customClass: { // nueva clase en el moda
+                container: 'swal-content',
+            },
+        }).then((result) => {
+            if(result.value) {
+                console.log(result)
+                // fetchin api
+            }
+        })
     }
 
-    window.handlerXXX = handlerXXX
     return (
         <div className='main main-staff'>
             <div className='page-header'>
@@ -81,7 +98,7 @@ const Staff = () => {
                                 ))}
                             </thead>
                             <tbody>
-                                {table.getRowModel().rows.map(row => (
+                                {table.getRowModel().rows.map(row => ( 
                                     <tr key={row.id}>
                                         {row.getVisibleCells().map(cell => (
                                             <td key={cell.id} className='text-sm py-4 px-6' style={{ textAlign: 'center' }}>
@@ -89,14 +106,9 @@ const Staff = () => {
                                             </td>
                                         ))}
                                         <td>
-                                            <div className='table-opts' >
-                                                <button className='table-opts__icon' onClick={(evt) => handlerXXX(evt, row.id)}>
-                                                    <span className="material-icons align-middle">more_vert</span>
-                                                </button>
-                                                <div className='table-opts__links flex flex-col' data-id={`elem-${row.id}`}>
-                                                    <Link to={`/personal/editar/${row.id}`}>Editar</Link>
-                                                    <Link to={`/personal/eliminar/${row.id}`}>Eliminar</Link>
-                                                </div>
+                                            <div className='flex flex-inline justify-center'>
+                                                <Link to={`/personal/editar/${row.original.id}`} className='btn-opt'><span className="material-icons">open_in_new</span></Link>
+                                                <button className='btn-opt' onClick={(evt) => handleSwalRemove(evt, row.original.id)}><span className="material-icons">delete</span></button>
                                             </div>
                                         </td>
                                     </tr>
