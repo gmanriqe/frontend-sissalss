@@ -44,6 +44,7 @@
 @import url("./styles/components/profile-header.css");
 @import url("./styles/components/user-profile.css");
 @import url("./styles/components/main-menu.css");
+@import url("./styles/components/table.css");
 
 html {
   font-size: 62.5%;

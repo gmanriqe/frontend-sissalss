@@ -1,0 +1,32 @@
+.table-opts {
+    position: relative;
+}
+.table-opts .table-opts__icon{
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+}
+.table-opts .table-opts__icon:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+.table-opts .table-opts__links {
+    padding: 1rem 0;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70px;
+    height: 100%;
+    border:1px solid rgba(0, 0, 0, 0.04);
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.04);
+    display: none;
+    z-index: 100;
+}
+.table-opts .table-opts__links.show {
+    display: block;
+}
+.table-opts .table-opts__links a {
+    padding: 0.5rem 1rem;
+    display: block;
+}

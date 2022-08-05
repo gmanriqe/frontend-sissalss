@@ -1,5 +1,6 @@
-export const personal = [
+export const staff = [
     {
+        id: 1,
         fisrt_name: 'Gonzales',
         last_name: 'Manrique',
         state: 1,
@@ -11,6 +12,7 @@ export const personal = [
         email: 'gmanriqe@gmail.com',
     },
     {
+        id: 2,
         fisrt_name: 'Sofia',
         last_name: 'Guerra',
         state: 1,
