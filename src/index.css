@@ -27,6 +27,8 @@
   --black-color: #000;
   --hover-component-profile: rgba(0, 0, 0, 0.04);
   --hover-component-menu: rgba(255, 255, 255, 0.05);
+
+  --btn-secondary: #4f46e5;
 }
 
 /* Config */
