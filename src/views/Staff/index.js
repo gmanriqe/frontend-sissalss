@@ -41,6 +41,9 @@ const Staff = () => {
         getCoreRowModel: getCoreRowModel(),
     })
 
+    // Storage
+    localStorage.setItem('staff', JSON.stringify(data))
+
     // Handler remove row
     const handleSwalRemove = (evt, ID) => {
         MySwal.fire({

@@ -30,7 +30,7 @@ const Login = () => {
             if (resultData) {
                 localStorage.setItem('token', resultData)
                 setIsLogged(true)
-                navigate('/clientes')
+                navigate('/personal')
             }
         })
     }

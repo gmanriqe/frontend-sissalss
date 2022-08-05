@@ -10,6 +10,7 @@ import Quote from '../views/Quote';
 import Login from '../views/Login';
 import Staff from '../views/Staff';
 import AddStaff from "../views/Staff/AddStaff";
+import EditStaff from "../views/Staff/EditStaff";
 import Page404 from "../views/Page404";
 import Dashboard from "../views/Dashboard";
 
@@ -23,6 +24,7 @@ const RoutesComponent = () => {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/personal" element={isLogged ? (<Staff />) : (<Navigate to='/login' />)} />
                 <Route path="/personal/nuevo" element={isLogged ? (<AddStaff />) : (<Navigate to='/login' />)} />
+                <Route path="/personal/editar/:id" element={isLogged ? (<EditStaff />) : (<Navigate to='/login' />)} />
                 <Route path="/clientes" element={isLogged ? (<Clients />) : (<Navigate to='/login' />)} />
                 <Route path="/clientes/nuevo" element={isLogged ? (<AddClient />) : (<Navigate to='/login' />)} />
                 <Route path="/cita" element={<Quote />} />

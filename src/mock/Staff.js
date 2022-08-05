@@ -1,8 +1,8 @@
 export const staff = [
     {
-        id: 1,
-        fisrt_name: 'Gonzales',
-        last_name: 'Manrique',
+        id: '1',
+        first_name: 'Jesús',
+        last_name: 'Gonzales',
         state: 1,
         birth_date: '1991-12-24',
         doc_type: 1,
@@ -12,8 +12,8 @@ export const staff = [
         email: 'gmanriqe@gmail.com',
     },
     {
-        id: 2,
-        fisrt_name: 'Sofia',
+        id: '2',
+        first_name: 'Sofia',
         last_name: 'Guerra',
         state: 1,
         birth_date: '1996-05-01',
