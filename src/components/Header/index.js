@@ -62,7 +62,7 @@ const Header = () => {
                     </button>
                     <div className='profile-header__opt'>
                         <ul>
-                            <li><Link to='perfil'><i class="material-icons profile-header__icon">account_circle</i> Mi perfil</Link></li>
+                            <li><Link to='perfil'><i className="material-icons profile-header__icon">account_circle</i> Mi perfil</Link></li>
                             <li><Link to='salir'><i className="material-icons profile-header__icon">logout</i> Salir</Link></li>
                         </ul>
                     </div>
