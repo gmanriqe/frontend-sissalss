@@ -3,18 +3,21 @@ import { Link } from 'react-router-dom'
 import {
     createColumnHelper, flexRender, getCoreRowModel, useReactTable
 } from '@tanstack/react-table'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 import { APIListClient } from '../../api/clients.js'
 import { CONFIG_HEADER } from '../../config/index.js'
 
+const MySwal = withReactContent(Swal);
 const columnHelper = createColumnHelper()
 const columns = [
     columnHelper.accessor('id', {
         cell: info => info.getValue(),
     }),
-    columnHelper.accessor('nombre', {
+    columnHelper.accessor('nombres', {
         cell: info => info.getValue(),
     }),
-    columnHelper.accessor('apellido', {
+    columnHelper.accessor('apellidos', {
         cell: info => info.getValue(),
     }),
     columnHelper.accessor('fecha_nacimiento', {
@@ -31,13 +34,37 @@ const columns = [
     }),
 ]
 
+const handleSwalRemove = (evt, ID) => {
+    MySwal.fire({
+        text: `ID = ${ID}. DESEA ELIMINAR ESTE REGISTRO?.`,
+        icon: 'warning',
+        confirmButtonText: 'OK',
+        showCloseButton: true, // icon cerrar
+        allowOutsideClick: false, // click afuera no cierra
+        allowEscapeKey: true, // keyup esc cierra
+        customClass: { // nueva clase en el moda
+            container: 'swal-content',
+        },
+    }).then((result) => {
+        if(result.value) {
+            console.log(result)
+            // fetchin api
+        }
+    })
+}
+
 const Clients = () => {
     const [data, setData] = useState([])
 
     useEffect(() => {
         CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + localStorage.getItem('token')
         APIListClient(CONFIG_HEADER, (response) => {
-            setData(response.data)
+            let data = response.data.data
+
+            if (data.length > 0) {
+                setData(JSON.parse(data))
+            }
+
         })
     }, []);
 
@@ -50,7 +77,7 @@ const Clients = () => {
     return (
         <div className='main main-clients'>
             <div className='page-header'>
-                <div className='mx-auto p-20 container '>
+                <div className='mx-auto p-20 max-w-7xl'>
                     <nav className='page-breadcrumb'>
                         <ul>
                             <li><Link to='/clientes'>Clientes</Link></li>
@@ -59,7 +86,7 @@ const Clients = () => {
                     <h1 className='text-3xl md:text-4xl font-extrabold mt-8'>CLIENTES</h1>
                 </div>
             </div>
-            <div className='mx-auto p-20 container'>
+            <div className='mx-auto p-20 max-w-7xl'>
                 <div className='flex justify-end mb-10'>
                     <Link to='/clientes/nuevo' className='btn-rds'>Nuevo</Link>
                 </div>
@@ -78,19 +105,34 @@ const Clients = () => {
                                                 )}
                                         </th>
                                     ))}
+                                    <th></th>
                                 </tr>
                             ))}
                         </thead>
                         <tbody>
-                            {table.getRowModel().rows.map(row => (
-                                <tr className='border border-slate-300' key={row.id}>
-                                    {row.getVisibleCells().map(cell => (
-                                        <td key={cell.id} >
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            {(table.getRowModel().rows.length > 0)
+                                ? table.getRowModel().rows.map(row => (
+                                    <tr key={row.id} className='border border-slate-300'>
+                                        {row.getVisibleCells().map(cell => (
+                                            <td key={cell.id} className='text-sm py-4 px-6 text-center'>
+                                                {cell.isPlaceholder
+                                                    ? null
+                                                    : flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext()
+                                                    )}
+                                            </td>
+                                        ))}
+                                        <td>
+                                            <div className='flex flex-inline justify-center'>
+                                                <Link to={`/clientes/editar/${row.original.id}`} className='btn-opt'><span className="material-icons">open_in_new</span></Link>
+                                                <button className='btn-opt' onClick={(evt) => handleSwalRemove(evt, row.original.id)}><span className="material-icons">delete</span></button>
+                                            </div>
                                         </td>
-                                    ))}
-                                </tr>
-                            ))}
+                                    </tr>
+                                ))
+                                : <tr><td colSpan={table.getHeaderGroups()[0].headers.length}>No hay registros</td></tr>
+                            }
                         </tbody>
                     </table>
                     <div className="flex items-center gap-2">

@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { URL_API, CONFIG_HEADER as headerConfig } from '../config/index'
 
-export const APIListClient = (CONFIG_HEADER = headerConfig, callback) => {
-    const url = `${URL_API}/list_clients`
+export const APIListTypeDocument = (CONFIG_HEADER = headerConfig, callback) => {
+    const url = `${URL_API}/list_documento_identidad`
     axios
         .get(url, CONFIG_HEADER)
         .then(response => {
