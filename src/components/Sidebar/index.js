@@ -1,10 +1,18 @@
-import { useEffect, useContext } from 'react';
+import { useEffect, useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
+import jwt_decode from "jwt-decode";
 import { MenuContext } from '../../context/MenuContent';
 import avatar from '../../assets/images/avatar_profile.jpeg';
+import { APIPermissionsMenu } from '../../api/menu';
+import { groupBy } from '../../utils/utils';
 
 const Sidebar = () => {
     const [menu, setMenu] = useContext(MenuContext);
+
+    const [permissions, setPermissions] = useState([]);
+
+    let token = localStorage.getItem('token')
+    let decoded = jwt_decode(token)
 
     useEffect(() => {
         const $menu = document.getElementById('menu')
@@ -13,10 +21,22 @@ const Sidebar = () => {
         $menu.addEventListener('click', () => {
             setMenu(!menu)
             $sidebar.classList.add('hide-menu')
-            console.log(menu)
         })
-    }, [menu, setMenu]);
 
+        // Menu dinamic
+        let username = {
+            username: decoded.username
+        }
+
+        APIPermissionsMenu(username, (response) => {
+            let data = response?.data?.data
+            if (data) {
+                let groupByMenu = groupBy(data, 'header_section')
+                setPermissions(groupByMenu)
+            }
+            // setPermissions()
+        })
+    }, []);
 
     return (
         <div className='sidebar flex-col flex-auto sticky top-0 overflow-hidden h-screen shrink-0 z-20 shadow-5' id='sidebar'>
@@ -37,30 +57,30 @@ const Sidebar = () => {
                                 <img alt="Abbott Keitch" src={avatar} className='rounded-full' />
                             </figure>
                         </div>
-                        <p className="text-14 font-medium whitespace-nowrap">Jesús Gonzales</p>
-                        <p className="user-profile__mail text-13 font-medium whitespace-nowrap">jgonzales@luchasalonspa.pe</p>
+                        <p className="text-14 font-medium whitespace-nowrap">{`${decoded.first_name} ${decoded.last_name}`}</p>
+                        <p className="user-profile__mail text-13 font-medium whitespace-nowrap">{decoded.email.toLowerCase()}</p>
                     </div>
-                    {/* menu */}
                     <ul className='main-menu'>
-                        <li>
-                            <div className='main-menu__header'>
-                                <h6>Control</h6>
-                                <small>Control del personal</small>
-                            </div>
-                            <ul className='main-menu__list'>
-                                <li><Link to='/personal'><span className="material-icons align-middle">groups</span>Personal</Link></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <div className='main-menu__header'>
-                                <h6>Citas</h6>
-                                <small>Citas y clientas</small>
-                            </div>
-                            <ul className='main-menu__list'>
-                                <li><Link to='/citas'><span className="material-icons align-middle">volunteer_activism</span>Citas</Link></li>
-                                <li><Link to='/clientes'><span className="material-icons align-middle">group</span>Clientes</Link></li>
-                            </ul>
-                        </li>
+                        {
+                            Object.keys(permissions).map((key, index) => (
+                                <li>
+                                    <div className='main-menu__header'>
+                                        <h6>{Object.keys(permissions)[index].split(' - ')[0]}</h6>
+                                        <small>{Object.keys(permissions)[index].split(' - ')[1]}</small>
+                                    </div>
+                                    <ul className='main-menu__list'>
+                                        {
+                                            permissions[Object.keys(permissions)[index]].map((item, index) => (
+                                                <li>
+                                                    <Link to={item.path}><span className="material-icons align-middle">{item.icon}</span>{item.name_items}</Link>
+                                                </li>
+                                            ))
+                                        }
+                                    </ul>
+
+                                </li>
+                            ))
+                        }
                     </ul>
                 </div>
             </div>

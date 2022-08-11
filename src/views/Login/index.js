@@ -27,6 +27,11 @@ const Login = () => {
         APILogin(values, (response) => {
             let resultData = response.data?.token
 
+            if(!resultData) {
+                const $message = document.getElementById('message-login')
+                $message.innerHTML = `${response.data?.message}`
+            }
+
             if (resultData) {
                 localStorage.setItem('token', resultData)
                 setIsLogged(true)
@@ -39,8 +44,8 @@ const Login = () => {
         <main className='card w-full max-w-xs p-16'>
             <Formik
                 initialValues={{
-                    username: 'gmanriqe',
-                    password: 'gmanriqe',
+                    username: 'srios',
+                    password: 'srios',
                 }}
                 validate={validateMainForm}
                 onSubmit={handleSubmit}
@@ -78,6 +83,7 @@ const Login = () => {
                             <div className='form-group text-center'>
                                 <button className='btn-rds btn-primary btn-block' type='submit'>Ingresar</button>
                             </div>
+                            <div className='form-group' id='message-login'></div>
                         </fieldset>
                     </Form>)}
             </Formik>
