@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { APILogin } from '../../api/login';
 import { AuthContext } from '../../context/AuthContent';
 
+import {useSelector} from 'react-redux'
+
 const validateMainForm = (values) => {
     const errors = {};
 
@@ -21,7 +23,9 @@ const validateMainForm = (values) => {
 const Login = () => {
     const navigate = useNavigate();
 
-    const [isLogged, setIsLogged] = useContext(AuthContext);
+    // const [isLogged, setIsLogged] = useContext(AuthContext);
+    const auth = useSelector((state) => state.auth);
+    console.log(auth);
 
     const handleSubmit = (values) => {
         APILogin(values, (response) => {
@@ -34,7 +38,7 @@ const Login = () => {
 
             if (resultData) {
                 localStorage.setItem('token', resultData)
-                setIsLogged(true)
+                // setIsLogged(true)
                 navigate('/personal')
             }
         })
@@ -51,7 +55,7 @@ const Login = () => {
                 onSubmit={handleSubmit}
             >
                 {(formData) => (
-                    <Form noValidate>
+                    <Form noValidate autoComplete="off">
                         <fieldset className='grid grid-cols-1 gap-10'>
                             <legend className='text-center font-bold text-2xl'>SISSA</legend>
                             <div className='form-group'>

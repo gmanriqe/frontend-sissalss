@@ -1,17 +1,19 @@
 // 1ero: Paquetes de terceros
 import RoutesComponent from './routes/index';
-import { AuthProvider } from './context/AuthContent';
 import { MenuProvider } from './context/MenuContent';
+// Redux
+import { Provider } from 'react-redux';
+import { store } from './app/store';
 
 const App = () => {
     return (
         <div className="App">
-            <AuthProvider>
+            <Provider store={store}>
                 <MenuProvider>
                     <RoutesComponent />
                 </MenuProvider>
-            </AuthProvider>
-        </div>
+            </Provider>
+        </div >
     );
 }
 export default App;

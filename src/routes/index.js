@@ -15,8 +15,8 @@ import Page404 from "../views/Page404";
 import Dashboard from "../views/Dashboard";
 
 const RoutesComponent = () => {
-    const [isLogged] = useContext(AuthContext);
-
+    // const [isLogged] = useContext(AuthContext);
+    const isLogged = false
     return (
         <Routes>
             <Route element={<Layout1 />} >
