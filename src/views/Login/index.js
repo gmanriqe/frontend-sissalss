@@ -1,9 +1,10 @@
+import { useContext } from "react";
 import { Formik, Form, Field } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { APILogin } from '../../api/login';
+import { AuthContext } from '../../context/AuthContent';
 
-import {useSelector, useDispatch} from 'react-redux'
-import { setIsAuthenticated } from '../../redux/task/auth/authSlice';
+import {useSelector} from 'react-redux'
 
 const validateMainForm = (values) => {
     const errors = {};
@@ -20,12 +21,11 @@ const validateMainForm = (values) => {
 }
 
 const Login = () => {
-    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
-
     const navigate = useNavigate();
-    const dispatch = useDispatch();
-    // let [auth, setAuth] = useState(isAuthenticated)
 
+    // const [isLogged, setIsLogged] = useContext(AuthContext);
+    const auth = useSelector((state) => state.auth);
+    console.log(auth);
 
     const handleSubmit = (values) => {
         APILogin(values, (response) => {
@@ -38,7 +38,7 @@ const Login = () => {
 
             if (resultData) {
                 localStorage.setItem('token', resultData)
-                dispatch(setIsAuthenticated(!isAuthenticated))
+                // setIsLogged(true)
                 navigate('/personal')
             }
         })

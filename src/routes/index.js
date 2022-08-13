@@ -1,6 +1,7 @@
 // 1ero: Paquetes de terceros
+import { useContext } from "react";
 import { Route, Routes, Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { AuthContext } from '../context/AuthContent';
 // 2do: Paquetes de mi propio proyecto
 import { Layout1, Layout2 } from '../components/Layout';
 import Clients from '../views/Client';
@@ -14,8 +15,8 @@ import Page404 from "../views/Page404";
 import Dashboard from "../views/Dashboard";
 
 const RoutesComponent = () => {
-    const isLogged = useSelector(state => state.auth.isAuthenticated);
-
+    // const [isLogged] = useContext(AuthContext);
+    const isLogged = false
     return (
         <Routes>
             <Route element={<Layout1 />} >
@@ -32,7 +33,7 @@ const RoutesComponent = () => {
                 {/* <Route path="*" element={<div>404</div>} /> */}
             </Route>
             <Route element={<Layout2 />} >
-                <Route path="/login" element={isLogged ? (<Navigate to='/dashboard' />) : <Login />} />
+                <Route path="/login" element={<Login />} />
             </Route>
         </Routes>
     )
