@@ -2,17 +2,13 @@ import { useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom'
 import avatar from '../../assets/images/avatar_profile.jpeg';
 import { MenuContext } from '../../context/MenuContent';
+import { AuthContext } from '../../context/AuthContent';
 
 const Header = () => {
+    const [isLogged, setIsLogged] = useContext(AuthContext);
     const [menu, setMenu] = useContext(MenuContext);
 
     useEffect(() => {
-        const $profile = document.getElementById('btn-profile')
-        // Profile
-        $profile.addEventListener('click', () => {
-            $profile.nextElementSibling.classList.toggle('show')
-        })
-
         if(!menu) {
             const $menu = document.getElementById('menu-header')
             if($menu) return
@@ -33,7 +29,22 @@ const Header = () => {
             </span>`
             $optsHeader.appendChild(elem)
         }
-    }, [menu]);
+    }, []);
+
+    const handleLogout = () => {
+        setIsLogged(false)
+        localStorage.removeItem('token')
+        window.location.href = '/'
+    }
+
+    const handleToggleDropdown = () => {
+        const $profile = document.getElementById('btn-profile')
+        // Profile
+        $profile.addEventListener('click', () => {
+            $profile.nextElementSibling.classList.toggle('show')
+        })
+    }
+
 
     const handleClick = () => {
         const $menu = document.getElementById('menu-header')
@@ -51,7 +62,7 @@ const Header = () => {
             <div className='flex p-0 min-h-48 md:min-h-64'>
                 <div className='flex items-center flex-1 px-16' id='opts-header'></div>
                 <div className='profile-header flex items-center px-8 h-full'>
-                    <button type='button' className='profile-header__btn flex items-center min-h-40 min-w-40 px-0 md:px-16 py-0 md:py-6' id='btn-profile'>
+                    <button type='button' className='profile-header__btn flex items-center min-h-40 min-w-40 px-0 md:px-16 py-0 md:py-6' id='btn-profile' onClick={() => {handleToggleDropdown()}}>
                         <div className='hidden md:flex flex-col mx-4 items-end'>
                             <span className='font-semibold flex muiltr-1niqtu4-MuiTypography-root'>Abbott Keitch</span>
                             <p className='text-11 font-medium capitalize'>admin</p>
@@ -63,7 +74,7 @@ const Header = () => {
                     <div className='profile-header__opt'>
                         <ul>
                             <li><Link to='perfil'><i className="material-icons profile-header__icon">account_circle</i> Mi perfil</Link></li>
-                            <li><Link to='salir'><i className="material-icons profile-header__icon">logout</i> Salir</Link></li>
+                            <li><span onClick={() => handleLogout()}><i className="material-icons profile-header__icon">logout</i> Salir</span></li>
                         </ul>
                     </div>
                 </div>
