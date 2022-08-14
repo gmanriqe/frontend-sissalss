@@ -1,5 +1,5 @@
 // 1ero: Paquetes de terceros
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContent';
 // 2do: Paquetes de mi propio proyecto
@@ -15,26 +15,43 @@ import Page404 from "../views/Page404";
 import Dashboard from "../views/Dashboard";
 
 const RoutesComponent = () => {
-    // const [isLogged] = useContext(AuthContext);
-    const isLogged = false
+    const [isLogged, setIsLogged]  = useContext(AuthContext);
+    
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            setIsLogged(true);
+        }
+    }, []);
+
     return (
         <Routes>
-            <Route element={<Layout1 />} >
-                <Route path="/" element={isLogged ? (<Navigate to="/dashboard" />) : (<Navigate to="/login" />)} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/personal" element={isLogged ? (<Staff />) : (<Navigate to='/login' />)} />
-                <Route path="/personal/nuevo" element={isLogged ? (<AddStaff />) : (<Navigate to='/login' />)} />
-                <Route path="/personal/editar/:id" element={isLogged ? (<EditStaff />) : (<Navigate to='/login' />)} />
-                <Route path="/clientes" element={isLogged ? (<Clients />) : (<Navigate to='/login' />)} />
-                <Route path="/clientes/nuevo" element={isLogged ? (<AddClient />) : (<Navigate to='/login' />)} />
-                <Route path="/cita" element={<Quote />} />
+            {
+                isLogged ? (
+                    <Route element={<Layout1 />} >
+                        <Route path="/" element={<Navigate to="/dashboard" />} />
+                        <Route path="/login" element={<Navigate to="/dashboard" />} />
 
-                <Route path="*" element={<Page404 />} />
-                {/* <Route path="*" element={<div>404</div>} /> */}
-            </Route>
-            <Route element={<Layout2 />} >
-                <Route path="/login" element={<Login />} />
-            </Route>
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/personal" element={<Staff />} />
+                        <Route path="/personal/nuevo" element={<AddStaff />} />
+                        <Route path="/personal/editar/:id" element={<EditStaff />} />
+                        <Route path="/clientes" element={<Clients />} />
+                        <Route path="/clientes/nuevo" element={<AddClient />} />
+                        <Route path="/cita" element={<Quote />} />
+
+                        <Route path="*" element={<Page404 />} />
+                        {/* <Route path="*" element={<div>404</div>} /> */}
+                    </Route>
+                ) : (
+                    <Route element={<Layout2 />} >
+                        <Route path="/" element={<Navigate to="/login" />} />
+                        <Route path="/login" element={<Login />} />
+                        
+                        <Route path="*" element={<Navigate to="/login" />} />
+                    </Route>
+                )
+            }
         </Routes>
     )
 }

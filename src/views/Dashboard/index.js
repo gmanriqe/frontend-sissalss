@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 const Dashboard = () => {
     return (
         <div className='main main-page404 flex items-center h-screen'>

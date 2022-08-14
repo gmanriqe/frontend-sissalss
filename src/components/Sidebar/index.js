@@ -63,15 +63,15 @@ const Sidebar = () => {
                     <ul className='main-menu'>
                         {
                             Object.keys(permissions).map((key, index) => (
-                                <li>
+                                <li key={index}>
                                     <div className='main-menu__header'>
                                         <h6>{Object.keys(permissions)[index].split(' - ')[0]}</h6>
                                         <small>{Object.keys(permissions)[index].split(' - ')[1]}</small>
                                     </div>
                                     <ul className='main-menu__list'>
                                         {
-                                            permissions[Object.keys(permissions)[index]].map((item, index) => (
-                                                <li>
+                                            permissions[Object.keys(permissions)[index]].map((item, idx) => (
+                                                <li key={idx}>
                                                     <Link to={item.path}><span className="material-icons align-middle">{item.icon}</span>{item.name_items}</Link>
                                                 </li>
                                             ))

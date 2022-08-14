@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { APILogin } from '../../api/login';
 import { AuthContext } from '../../context/AuthContent';
 
-import {useSelector} from 'react-redux'
+// import {useSelector} from 'react-redux'
 
 const validateMainForm = (values) => {
     const errors = {};
@@ -23,9 +23,8 @@ const validateMainForm = (values) => {
 const Login = () => {
     const navigate = useNavigate();
 
-    // const [isLogged, setIsLogged] = useContext(AuthContext);
-    const auth = useSelector((state) => state.auth);
-    console.log(auth);
+    const [isLogged, setIsLogged] = useContext(AuthContext);
+    // const auth = useSelector((state) => state.auth);
 
     const handleSubmit = (values) => {
         APILogin(values, (response) => {
@@ -38,7 +37,7 @@ const Login = () => {
 
             if (resultData) {
                 localStorage.setItem('token', resultData)
-                // setIsLogged(true)
+                setIsLogged(true)
                 navigate('/personal')
             }
         })

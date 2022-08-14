@@ -35,6 +35,7 @@ const columns = [
 
 const Staff = () => {
     const [data, setData] = useState(staff)
+    
     const table = useReactTable({
         data,
         columns,
