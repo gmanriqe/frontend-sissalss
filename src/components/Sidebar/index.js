@@ -15,14 +15,6 @@ const Sidebar = () => {
     let decoded = jwt_decode(token)
 
     useEffect(() => {
-        const $menu = document.getElementById('menu')
-        const $sidebar = document.getElementById('sidebar')
-
-        $menu.addEventListener('click', () => {
-            setMenu(!menu)
-            $sidebar.classList.add('hide-menu')
-        })
-
         // Menu dinamic
         let username = {
             username: decoded.username
@@ -30,13 +22,45 @@ const Sidebar = () => {
 
         APIPermissionsMenu(username, (response) => {
             let data = response?.data?.data
+
             if (data) {
                 let groupByMenu = groupBy(data, 'header_section')
                 setPermissions(groupByMenu)
             }
-            // setPermissions()
         })
     }, []);
+
+    const handleToggleMenu = () => {
+        const $sidebar = document.getElementById('sidebar')
+
+        setMenu(!menu)
+        $sidebar.classList.add('hide-menu')
+        menu_()
+    }
+
+    const menu_ = () => {
+        if(!!menu) {
+            const $menu = document.getElementById('menu-header')
+            if($menu) return
+            
+            // New element (menu)
+            const $optsHeader = document.getElementById('opts-header')
+            const elem = document.createElement('button')
+            let attr = {
+                type: 'button',
+                class: 'w-40 h-40 p-0',
+                id: 'menu-header',
+                onclick: 'handleClick()'
+            }
+            Object.keys(attr).forEach(key => {
+                elem.setAttribute(key, attr[key])
+            })
+            elem.innerHTML = `<span class="material-icons">
+                drag_handle
+            </span>`
+            $optsHeader.appendChild(elem)
+        }
+    }
 
     return (
         <div className='sidebar flex-col flex-auto sticky top-0 overflow-hidden h-screen shrink-0 z-20 shadow-5' id='sidebar'>
@@ -45,7 +69,7 @@ const Sidebar = () => {
                     <div className='flex flex-1 mx-4'>
 
                     </div>
-                    <button type="button" className="w-40 h-40 p-0" id='menu'>
+                    <button type="button" className="w-40 h-40 p-0" id='menu' onClick={() => handleToggleMenu()}>
                         <span className="material-icons">drag_handle</span>
                     </button>
                 </div>

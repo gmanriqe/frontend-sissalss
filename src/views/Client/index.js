@@ -14,22 +14,22 @@ const columns = [
     columnHelper.accessor('id', {
         cell: info => info.getValue(),
     }),
-    columnHelper.accessor('nombres', {
+    columnHelper.accessor('first_name', {
         cell: info => info.getValue(),
     }),
-    columnHelper.accessor('apellidos', {
+    columnHelper.accessor('last_name', {
         cell: info => info.getValue(),
     }),
-    columnHelper.accessor('fecha_nacimiento', {
+    columnHelper.accessor('birth_date', {
         cell: info => info.getValue(),
     }),
     columnHelper.accessor('email', {
         cell: info => info.getValue(),
     }),
-    columnHelper.accessor('telefono', {
+    columnHelper.accessor('telephone', {
         cell: info => info.getValue(),
     }),
-    columnHelper.accessor('sexo', {
+    columnHelper.accessor('sex', {
         cell: info => info.getValue(),
     }),
 ]
@@ -95,17 +95,14 @@ const Clients = () => {
                         <thead className='text-xs text-gray-700 uppercase bg-gray-50'>
                             {table.getHeaderGroups().map(headerGroup => (
                                 <tr className='border border-slate-300' key={headerGroup.id}>
-                                    {headerGroup.headers.map(header => (
-                                        <th key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                        </th>
-                                    ))}
-                                    <th></th>
+                                    <th className='p-8'>#</th>
+                                    <th className='p-8'>NOMBRES</th>
+                                    <th className='p-8'>APELLIDOS</th>
+                                    <th className='p-8'>FECHA DE NACIMIENTO</th>
+                                    <th className='p-8'>EMAIL</th>
+                                    <th className='p-8'>TELÉFONO</th>
+                                    <th className='p-8'>SEXO</th>
+                                    <th className='p-8'></th>
                                 </tr>
                             ))}
                         </thead>
@@ -135,67 +132,6 @@ const Clients = () => {
                             }
                         </tbody>
                     </table>
-                    <div className="flex items-center gap-2">
-                        <button
-                            className="border rounded p-1"
-                            onClick={() => table.setPageIndex(0)}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            {'<<'}
-                        </button>
-                        <button
-                            className="border rounded p-1"
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            {'<'}
-                        </button>
-                        <button
-                            className="border rounded p-1"
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            {'>'}
-                        </button>
-                        <button
-                            className="border rounded p-1"
-                            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            {'>>'}
-                        </button>
-                        <span className="flex items-center gap-1">
-                            <div>Page</div>
-                            <strong>
-                                {table.getState().pagination.pageIndex + 1} of{' '}
-                                {table.getPageCount()}
-                            </strong>
-                        </span>
-                        <span className="flex items-center gap-1">
-                            | Go to page:
-                            <input
-                                type="number"
-                                defaultValue={table.getState().pagination.pageIndex + 1}
-                                onChange={e => {
-                                    const page = e.target.value ? Number(e.target.value) - 1 : 0
-                                    table.setPageIndex(page)
-                                }}
-                                className="border p-1 rounded w-16"
-                            />
-                        </span>
-                        <select
-                            value={table.getState().pagination.pageSize}
-                            onChange={e => {
-                                table.setPageSize(Number(e.target.value))
-                            }}
-                        >
-                            {[10, 20, 30, 40, 50].map(pageSize => (
-                                <option key={pageSize} value={pageSize}>
-                                    Show {pageSize}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
                 </div>
             </div>
         </div >

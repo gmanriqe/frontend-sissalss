@@ -20,10 +20,10 @@
     display: none;
     position: absolute;
     top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
+    right: 0;
     z-index: 100;
     width: 100%;
+    min-width: 120px;
     max-width: 120px;
     box-shadow: 0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%);
     padding-top: 0.8rem;
@@ -33,16 +33,27 @@
 .profile-header .profile-header__opt.show {
     display: block;
 } 
-.profile-header .profile-header__opt a {
+.profile-header .profile-header__opt a,
+.profile-header .profile-header__opt span {
+    cursor: pointer;
     display: block;
     padding-top: 8px;
     padding-bottom: 8px;
     padding-left: 16px;
     padding-right: 16px;
 }
-.profile-header .profile-header__opt a:hover {
+.profile-header .profile-header__opt a:hover,
+.profile-header .profile-header__opt span:hover  {
     background-color: var(--hover-component-profile)
 }
-.profile-header .profile-header__opt a i {
+.profile-header .profile-header__opt a i,
+.profile-header .profile-header__opt span i {
     vertical-align: middle;
+}
+@media screen and (min-width: 1024px) {
+    .profile-header .profile-header__opt {
+        left: 50%;
+        right: initial;
+        transform: translateX(-50%);
+    }
 }
