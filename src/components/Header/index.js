@@ -3,11 +3,15 @@ import { Link } from 'react-router-dom'
 import avatar from '../../assets/images/avatar_profile.jpeg';
 import { MenuContext } from '../../context/MenuContent';
 import { AuthContext } from '../../context/AuthContent';
+import jwtDecode from 'jwt-decode';
 
 const Header = () => {
     const [isLogged, setIsLogged] = useContext(AuthContext);
     const [menu, setMenu] = useContext(MenuContext);
-   
+
+    let token = localStorage.getItem('token')
+    let decoded = jwtDecode(token)
+
     const handleLogout = () => {
         setIsLogged(false)
         localStorage.removeItem('token')
@@ -37,8 +41,8 @@ const Header = () => {
                 <div className='profile-header flex items-center px-8 h-full'>
                     <button type='button' className='profile-header__btn flex items-center min-h-40 min-w-40 px-0 md:px-16 py-0 md:py-6' id='btn-profile' onClick={() => handleToggleDropdown()}>
                         <div className='hidden md:flex flex-col mx-4 items-end'>
-                            <span className='font-semibold flex muiltr-1niqtu4-MuiTypography-root'>Abbott Keitch</span>
-                            <p className='text-11 font-medium capitalize'>admin</p>
+                            <span className='font-semibold flex muiltr-1niqtu4-MuiTypography-root'>{`${decoded.first_name} ${decoded.last_name}`}</span>
+                            <p className='text-11 font-medium capitalize'>{`${decoded.role}`}</p>
                         </div>
                         <div className='profile-header__image md:mx-4'>
                             <img className='' alt='avatar' src={avatar} />
