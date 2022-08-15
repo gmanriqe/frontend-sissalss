@@ -18,6 +18,7 @@
 }
 .profile-header .profile-header__opt {
     display: none;
+    background-color: var(--white-color);
     position: absolute;
     top: 100%;
     right: 0;

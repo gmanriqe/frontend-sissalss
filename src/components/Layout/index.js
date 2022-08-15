@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 // 2do: Paquetes de mi propio proyecto
 import Header from '../Header';
 import Sidebar from '../Sidebar';
-import Footer from '../Footer';
+// import Footer from '../Footer';
 
 export const Layout1 = () => {
     return (
@@ -21,7 +21,7 @@ export const Layout1 = () => {
                     </main>
                 </div>
             </div>
-            <Footer/>
+            {/*<Footer/>*/}
         </>
     );
 }

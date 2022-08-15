@@ -29,6 +29,9 @@
   --hover-component-menu: rgba(255, 255, 255, 0.05);
 
   --btn-secondary: #4f46e5;
+
+  --header-height-movil: 4.8rem;
+  --header-height-desktop: 6.4rem;
 }
 
 /* Config */

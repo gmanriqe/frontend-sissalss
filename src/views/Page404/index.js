@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 const Page404 = () => {
     return (
-        <div className='main main-page404 flex items-center h-screen'>
+        <div className='main main-page404 flex items-center h-screen-widthout-nav'>
             <div className='mx-auto p-20 container'>
                 <div className='max-w-640 m-auto'>
                     <h1 className='text-6xl font-dark font-bold'>404</h1>

@@ -8,3 +8,13 @@
     border-style: solid;
     border-color: var(--border-color);
 }
+
+.h-screen-widthout-nav {
+    height: calc(100vh - var(--header-height-movil));
+    
+}
+@media screen and (min-width: 1024px) {
+    .h-screen-widthout-nav {
+        height: calc(100vh - var(--header-height-desktop));
+    }
+}
