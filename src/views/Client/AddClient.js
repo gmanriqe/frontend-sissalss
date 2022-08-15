@@ -1,4 +1,4 @@
-// import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {
     Formik,
     Form
@@ -9,22 +9,23 @@ import Flatpickr from "react-flatpickr";
 import { Spanish } from 'flatpickr/dist/l10n/es.js'; // configure language for flatpickr
 import PageHeader from '../../components/PageHeader';
 import ErrorsMessage from '../../components/ErrorMessage';
+import { APIListTypeDocument } from '../../api/type_document'
+import { CONFIG_HEADER } from '../../config/index.js'
 
 const breadcrumbs = [{ names: 'Clientes', link: '/clientes' }, { names: 'Nuevo', link: '/clientes/nuevo' }]
-
-// Options for select
-const options = [
-    { label: 'SELECCIONE..', value: '', },
-    { label: 'DNI', value: 'DNI', },
-    { label: 'LIBRETA ELECTORAL', value: 'LIBRETA ELECTORAL' },
-]
-
-const options2 = [
-    { label: 'SELECCIONE..', value: '', },
-    { label: 'AMA DE CASA', value: 'AMA DE CASA', },
-    { label: 'ENFERMERA', value: 'ENFERMERA' },
-    { label: 'MEDICO', value: 'MEDICO' },
-    { label: 'OTROS', value: 'OTROS' }
+const sex = [
+    {
+        'label': 'SELECCIONE..',
+        'value': ''
+    },
+    {
+        'label': 'FEMENINO',
+        'value': '0'
+    },
+    {
+        'label': 'MASCULINO',
+        'value': '1'
+    },
 ]
 
 /**
@@ -69,6 +70,30 @@ const handleSubmit = (values, formData) => {
  * Main component
  */
 const AddClient = () => {
+    let [typeDocuments, setTypeDocuments] = useState([])
+
+    useEffect(() => {
+        CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + localStorage.getItem('token')
+        APIListTypeDocument(CONFIG_HEADER, (response) => {
+            console.log(response)
+            let data = response.data.data
+
+            if (data.length > 0) {
+                let listTypeDocument = JSON.parse(data)
+                let filter = listTypeDocument.filter( (item) => {
+                    return item.state === 1
+                })
+
+                let typeDocument = []
+                typeDocument.unshift({ label: 'SELECCIONE..', value: '' })
+                filter.map( (item) => (
+                    typeDocument.push({ label: item.name_document, value: item.id })
+                ))
+
+                setTypeDocuments(typeDocument)
+            }
+        })
+    }, []);
     // Type document
     const handleChangetypeDocument = (formData, selectedOption) => {
         formData.setFieldValue('type_document', selectedOption)
@@ -86,15 +111,6 @@ const AddClient = () => {
         formData.setFieldTouched('type_document', true)
     }
 
-    // Ocupation
-    const handleChangeOccupation = (formData, selectedOption) => {
-        formData.setFieldValue('occupation', selectedOption)
-    }
-
-    const handleOnBlurOccupation = (formData) => {
-        formData.setFieldTouched('occupation', true)
-    }
-
     // Brith date
     const handleChangeBirthDate = (formData, val) => {
         const $birthDate = val.length === 0 ? '' : new Date(new Date(val[0]).setHours(new Date().getHours(), new Date().getMinutes(), new Date().getSeconds()))
@@ -105,7 +121,6 @@ const AddClient = () => {
     const handleOnBlurBirthDate = (formData) => {
         formData.setFieldTouched('birth_date', true)
     }
-
 
     return (
         <div className='main main-addclient'>
@@ -121,7 +136,7 @@ const AddClient = () => {
                             birth_date: '',
                             phone: '',
                             email: '',
-                            occupation: { label: 'SELECCIONE..', value: '', },
+                            sex: { label: 'SELECCIONE..', value: '', },
                             observation: '',
                         }}
                         validationSchema={FormSchema}
@@ -167,7 +182,7 @@ const AddClient = () => {
                                         style={{ textTransform: 'uppercase' }}
                                         name='type_document'
                                         placeholder=''
-                                        options={options}
+                                        options={typeDocuments}
                                         onChange={(val) => handleChangetypeDocument(formData, val)}
                                         onBlur={() => handleOnBlurTypeDocument(formData)}
                                         defaultValue={formData.values.type_document}
@@ -191,36 +206,6 @@ const AddClient = () => {
                                     {
                                         formData.touched.nro_document && formData.errors.nro_document ? (
                                             <ErrorsMessage errors={formData.errors.nro_document} />
-                                        ) : null
-                                    }
-                                </div>
-                                <div className='form-group col-span-2 md:col-span-1'>
-                                    <label htmlFor='fecha_nacimiento'>Fecha de nacimiento</label>
-                                    <Flatpickr
-                                        id='fecha_nacimiento'
-                                        className='form-control'
-                                        placeholder='SELECCIONE..'
-                                        style={{textTransform: 'uppercase'}}
-                                        options={{
-                                            enableTime: false,
-                                            dateFormat: 'l, d M',
-                                            locale: Spanish,
-                                            minDate: "today",
-                                            disableMobile: "true"
-                                        }}
-                                        onChange={(val) => handleChangeBirthDate(formData, val)}
-                                        onBlur={() => handleOnBlurBirthDate(formData)}
-                                    />
-                                    {/* <input
-                                        id='fecha_nacimiento'
-                                        type='date'
-                                        className='form-control'
-                                        style={{ textTransform: 'uppercase' }}
-                                        {...formData.getFieldProps("birth_date")}
-                                    /> */}
-                                    {
-                                        formData.touched.birth_date && formData.errors.birth_date ? (
-                                            <ErrorsMessage errors={formData.errors.birth_date} />
                                         ) : null
                                     }
                                 </div>
@@ -255,21 +240,44 @@ const AddClient = () => {
                                     }
                                 </div>
                                 <div className='form-group col-span-2 md:col-span-1'>
-                                    <label htmlFor='ocupacion'>Ocupación</label>
-                                    <Select
-                                        id='ocupacion'
+                                    <label htmlFor='fecha_nacimiento'>Fecha de nacimiento</label>
+                                    <Flatpickr
+                                        id='fecha_nacimiento'
                                         className='form-control'
-                                        style={{ textTransform: 'uppercase' }}
-                                        name='occupation'
-                                        placeholder=''
-                                        options={options2}
-                                        onChange={(val) => handleChangeOccupation(formData, val)}
-                                        onBlur={() => handleOnBlurOccupation(formData)}
-                                        defaultValue={formData.values.occupation}
+                                        placeholder='SELECCIONE..'
+                                        style={{textTransform: 'uppercase'}}
+                                        options={{
+                                            enableTime: false,
+                                            dateFormat: 'l, d M',
+                                            locale: Spanish,
+                                            minDate: "today",
+                                            disableMobile: "true"
+                                        }}
+                                        onChange={(val) => handleChangeBirthDate(formData, val)}
+                                        onBlur={() => handleOnBlurBirthDate(formData)}
                                     />
                                     {
-                                        formData.errors.occupation?.value ? (
-                                            <ErrorsMessage errors={formData.errors.occupation?.value} />
+                                        formData.touched.birth_date && formData.errors.birth_date ? (
+                                            <ErrorsMessage errors={formData.errors.birth_date} />
+                                        ) : null
+                                    }
+                                </div>
+                                <div className='form-group col-span-2 md:col-span-1'>
+                                    <label htmlFor='sexo'>Sexo</label>
+                                    <Select
+                                        id='sexo'
+                                        className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
+                                        name='sex'
+                                        placeholder=''
+                                        options={sex}
+                                        onChange={(val) => handleChangetypeDocument(formData, val)}
+                                        onBlur={() => handleOnBlurTypeDocument(formData)}
+                                        defaultValue={formData.values.sex}
+                                    />
+                                    {
+                                        formData.errors.sex?.value ? (
+                                            <ErrorsMessage errors={formData.errors.sex?.value} />
                                         ) : null
                                     }
                                 </div>
