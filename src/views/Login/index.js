@@ -21,76 +21,88 @@ const validateMainForm = (values) => {
 }
 
 const Login = () => {
+    const { login } = useContext( AuthContext );
     const navigate = useNavigate();
+    // const navigate = useNavigate();
 
-    const [isLogged, setIsLogged] = useContext(AuthContext);
+    // const [isLogged, setIsLogged] = useContext(AuthContext);
     // const auth = useSelector((state) => state.auth);
 
     const handleSubmit = (values) => {
-        APILogin(values, (response) => {
-            let resultData = response.data?.token
+        // APILogin(values, (response) => {
+        //     let resultData = response.data?.token
 
-            if(!resultData) {
-                const $message = document.getElementById('message-login')
-                $message.innerHTML = `${response.data?.message}`
-            }
+        //     if(!resultData) {
+        //         const $message = document.getElementById('message-login')
+        //         $message.innerHTML = `${response.data?.message}`
+        //     }
 
-            if (resultData) {
-                localStorage.setItem('token', resultData)
-                setIsLogged(true)
-                navigate('/dashboard')
-            }
-        })
+        //     if (resultData) {
+        //         // setIsLogged(true)
+        //         navigate('/dashboard')
+        //     }
+        // })
+        
+        const lastPath = localStorage.getItem('lastPath') || '/';
+        localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJzcmlvcyIsImVtYWlsIjoic3Jpb3NAbHVjaGFzYWxvbnNwYS5wZSIsInJvbGUiOiJDQUpFUkEiLCJmaXJzdF9uYW1lIjoiU09GSUEiLCJsYXN0X25hbWUiOiJSSU9TIiwiaWF0IjoxNjYwNTkwNjE1LCJleHAiOjE2NjA2MDkyMTV9._Teb-HiSKvIMjDU5OFWeFJ6985rfumCdvs5HkI3aTpA')
+        
+        login( 'Fernando Herrera' );
+        
+        navigate( lastPath, {
+            replace: true
+        });
     }
 
     return (
-        <main className='card w-full max-w-xs p-16'>
-            <Formik
-                initialValues={{
-                    username: 'srios',
-                    password: 'srios',
-                }}
-                validate={validateMainForm}
-                onSubmit={handleSubmit}
-            >
-                {(formData) => (
-                    <Form noValidate autoComplete="off">
-                        <fieldset className='grid grid-cols-1 gap-10'>
-                            <legend className='text-center font-bold text-2xl'>SISSA</legend>
-                            <div className='form-group'>
-                                <label className='form-label'>Usuario</label>
-                                <Field
-                                    type='text'
-                                    className='form-control'
-                                    name='username'
-                                />
-                                {
-                                    formData.touched.username && formData.errors.username ? (
-                                        <span className='message-error error'>{formData.errors.username}</span>
-                                    ) : null
-                                }
-                            </div>
-                            <div className='form-group'>
-                                <label className='form-label'>Contraseña</label>
-                                <Field
-                                    type='password'
-                                    className='form-control'
-                                    name='password'
-                                />
-                                {
-                                    formData.touched.password && formData.errors.password ? (
-                                        <span className='message-error error'>{formData.errors.password}</span>
-                                    ) : null
-                                }
-                            </div>
-                            <div className='form-group text-center'>
-                                <button className='btn-rds btn-primary btn-block' type='submit'>Ingresar</button>
-                            </div>
-                            <div className='form-group' id='message-login'></div>
-                        </fieldset>
-                    </Form>)}
-            </Formik>
-        </main>
+        <div className='w-full h-screen flex justify-center items-center'>
+            <main className='card w-full max-w-xs p-16'>
+                <Formik
+                    initialValues={{
+                        username: 'srios',
+                        password: 'srios',
+                    }}
+                    validate={validateMainForm}
+                    onSubmit={handleSubmit}
+                >
+                    {(formData) => (
+                        <Form noValidate autoComplete="off">
+                            <fieldset className='grid grid-cols-1 gap-10'>
+                                <legend className='text-center font-bold text-2xl'>SISSA</legend>
+                                <div className='form-group'>
+                                    <label className='form-label'>Usuario</label>
+                                    <Field
+                                        type='text'
+                                        className='form-control'
+                                        name='username'
+                                    />
+                                    {
+                                        formData.touched.username && formData.errors.username ? (
+                                            <span className='message-error error'>{formData.errors.username}</span>
+                                        ) : null
+                                    }
+                                </div>
+                                <div className='form-group'>
+                                    <label className='form-label'>Contraseña</label>
+                                    <Field
+                                        type='password'
+                                        className='form-control'
+                                        name='password'
+                                    />
+                                    {
+                                        formData.touched.password && formData.errors.password ? (
+                                            <span className='message-error error'>{formData.errors.password}</span>
+                                        ) : null
+                                    }
+                                </div>
+                                <div className='form-group text-center'>
+                                    <button className='btn-rds btn-primary btn-block' type='submit'>Ingresar</button>
+                                </div>
+                                <div className='form-group' id='message-login'></div>
+                            </fieldset>
+                        </Form>)}
+                </Formik>
+            </main>
+        </div>
     );
 }
 export default Login;

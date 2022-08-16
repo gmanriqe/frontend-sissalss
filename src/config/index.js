@@ -10,3 +10,7 @@ export const CONFIG_HEADER = {
         'Access-Control-Allow-Origin': '*',
     },
 }
+export const ROLE = {
+    ADMIN: 'ADMIN',
+    CASHIER: 'CASHIER'
+}
