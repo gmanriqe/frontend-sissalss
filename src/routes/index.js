@@ -1,4 +1,6 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
+import { ROLE } from '../config';
+
 // 2do: Paquetes de mi propio proyecto
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
@@ -10,10 +12,15 @@ import Quote from '../views/Quote';
 import Staff from '../views/Staff';
 import AddStaff from "../views/Staff/AddStaff";
 import EditStaff from "../views/Staff/EditStaff";
-import Page404 from "../views/Page404";
 import Dashboard from "../views/Dashboard";
+import Page404 from "../views/Page404";
+import Anauthorized from "../views/Anauthorized";
+import jwtDecode from 'jwt-decode';
 
 const SissaRoutes = () => {
+    let token = localStorage.getItem('token')
+    let { role } = jwtDecode(token)
+
     return (
         <>
             <div className='w-full flex body-bg'>
@@ -26,16 +33,19 @@ const SissaRoutes = () => {
                                 <Routes>
                                     <Route path="/" element={<Navigate to="/dashboard" />} />
                                     <Route path="/login" element={<Navigate to="/dashboard" />} />
-
                                     <Route path="/dashboard" element={<Dashboard />} />
-                                    <Route path="/personal" element={<Staff />} />
-                                    <Route path="/personal/nuevo" element={<AddStaff />} />
-                                    <Route path="/personal/editar/:id" element={<EditStaff />} />
+                                    <Route path="*" element={<Page404 />} />
+                                    <Route path="/unauthorized" element={<Anauthorized />} />
+
+                                    {/* ADMIN */}
+                                    <Route path="/personal" element={(role === ROLE.ADMIN) ? (<Staff />) : (<Navigate to="/unauthorized" />)} />
+                                    <Route path="/personal/nuevo" element={(role === ROLE.ADMIN) ? (<AddStaff />) : (<Navigate to="/unauthorized" />)} />
+                                    <Route path="/personal/editar/:id" element={(role === ROLE.ADMIN) ? (<EditStaff />) : (<Navigate to="/unauthorized" />)} />
+
+                                    {/*  CASHIER */}
                                     <Route path="/clientes" element={<Clients />} />
                                     <Route path="/clientes/nuevo" element={<AddClient />} />
                                     <Route path="/cita" element={<Quote />} />
-
-                                    <Route path="*" element={<Page404 />} />
                                 </Routes>
                             </div>
                         </div>

@@ -11,9 +11,7 @@ import { PrivateRoute } from "./PrivateRoute";
 import SissaRoutes from "../routes";
 
 const RoutesComponent = () => {
-    console.log(PublicRoute)
     // const [isLogged, setIsLogged]  = useContext(AuthContext);
-
     useEffect(() => {
         // const token = localStorage.getItem('token');
         // if (token) {
