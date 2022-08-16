@@ -3,7 +3,6 @@ import { createContext, useReducer } from "react";
 import { types } from "./Auth/type";
 import { authReducer } from '../redux/task/auth/authReducer';
 
-console.log(types)
 const init = () => {
     const user = JSON.parse( localStorage.getItem('user') );
   
@@ -16,7 +15,10 @@ const init = () => {
 // Creacion de context
 export const AuthContext = createContext();
 
-// Creacion de provider
+/* 
+* Creacion de provider - Cada objeto Context viene con un componente Provider de React 
+* que permite que los componentes que lo consumen se suscriban a los cambios del contexto.
+*/
 export const AuthProvider = ({ children }) => {
     const [authState, dispatch] = useReducer(authReducer, {}, init);
 
@@ -35,7 +37,6 @@ export const AuthProvider = ({ children }) => {
         const action = { type: types.logout };
         dispatch(action);
     }
-
 
     return (
         <AuthContext.Provider value={{
