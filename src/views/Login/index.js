@@ -21,26 +21,36 @@ const validateMainForm = (values) => {
 }
 
 const Login = () => {
+    const { login } = useContext( AuthContext );
     const navigate = useNavigate();
+    // const navigate = useNavigate();
 
-    const [isLogged, setIsLogged] = useContext(AuthContext);
+    // const [isLogged, setIsLogged] = useContext(AuthContext);
     // const auth = useSelector((state) => state.auth);
 
     const handleSubmit = (values) => {
-        APILogin(values, (response) => {
-            let resultData = response.data?.token
+        // APILogin(values, (response) => {
+        //     let resultData = response.data?.token
 
-            if(!resultData) {
-                const $message = document.getElementById('message-login')
-                $message.innerHTML = `${response.data?.message}`
-            }
+        //     if(!resultData) {
+        //         const $message = document.getElementById('message-login')
+        //         $message.innerHTML = `${response.data?.message}`
+        //     }
 
-            if (resultData) {
-                localStorage.setItem('token', resultData)
-                setIsLogged(true)
-                navigate('/dashboard')
-            }
-        })
+        //     if (resultData) {
+        //         // setIsLogged(true)
+        //         navigate('/dashboard')
+        //     }
+        // })
+        
+        const lastPath = localStorage.getItem('lastPath') || '/';
+        localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJzcmlvcyIsImVtYWlsIjoic3Jpb3NAbHVjaGFzYWxvbnNwYS5wZSIsInJvbGUiOiJDQUpFUkEiLCJmaXJzdF9uYW1lIjoiU09GSUEiLCJsYXN0X25hbWUiOiJSSU9TIiwiaWF0IjoxNjYwNTkwNjE1LCJleHAiOjE2NjA2MDkyMTV9._Teb-HiSKvIMjDU5OFWeFJ6985rfumCdvs5HkI3aTpA')
+        
+        login( 'Fernando Herrera' );
+        
+        navigate( lastPath, {
+            replace: true
+        });
     }
 
     return (
