@@ -30,11 +30,11 @@ const Sidebar = () => {
         })
     }, []);
 
-    const handleToggleMenu = () => {
+    const handleToggleMenuIcon = () => {
         const $sidebar = document.getElementById('sidebar')
 
-        setMenu(!menu)
         $sidebar.classList.add('hide-menu')
+        setMenu(!menu)
         menu_()
     }
 
@@ -50,7 +50,7 @@ const Sidebar = () => {
                 type: 'button',
                 class: 'w-40 h-40 p-0',
                 id: 'menu-header',
-                onclick: 'handleClick()'
+                onclick: 'handleToggleMenuIcon()'
             }
             Object.keys(attr).forEach(key => {
                 elem.setAttribute(key, attr[key])
@@ -69,7 +69,7 @@ const Sidebar = () => {
                     <div className='flex flex-1 mx-4'>
 
                     </div>
-                    <button type="button" className="w-40 h-40 p-0" id='menu' onClick={() => handleToggleMenu()}>
+                    <button type="button" className="w-40 h-40 p-0" id='menu' onClick={() => handleToggleMenuIcon()}>
                         <span className="material-icons">drag_handle</span>
                     </button>
                 </div>
