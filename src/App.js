@@ -4,7 +4,7 @@ import { MenuProvider } from './context/MenuContent';
 import { AuthProvider } from './context/AuthContent';
 // Redux
 import { Provider } from 'react-redux';
-import { store } from './app/store';
+import { store } from './redux/store/store';
 
 const App = () => {
     return (

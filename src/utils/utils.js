@@ -36,3 +36,18 @@ export const handleValidOnlyNumber = (elemHTML) => {
         }
     })
 }
+
+/**
+ * Enable/Disable boton de busqueda
+ */
+export const enableSubmit = (elemHTML) => {
+    // const $btnSearch = document.getElementById('btn-search')
+    elemHTML.classList.remove('btn-loading')
+    elemHTML.removeAttribute('disabled')
+}
+
+export const disableSubmit = (elemHTML) => {
+    // const elemHTML = document.getElementById('btn-search')
+    elemHTML.classList.add('btn-loading')
+    elemHTML.setAttribute('disabled', 'disabled')
+}

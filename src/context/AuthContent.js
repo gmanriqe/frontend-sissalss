@@ -1,7 +1,7 @@
 
 import { createContext, useReducer } from "react";
 import { types } from "./Auth/type";
-import { authReducer } from '../redux/task/auth/authReducer';
+import { authReducer } from '../redux/slice/auth/authReducer';
 
 const init = () => {
     const user = JSON.parse( localStorage.getItem('user') );
