@@ -1,0 +1,16 @@
+.swal-content .swal2-popup {
+    width: 100%;
+    max-width: 480px;
+    padding: 2rem;
+}
+.swal-content .swal2-html-container {
+    font-size: 14px;
+}
+.swal-content .swal2-close {
+   position: absolute;
+   right: 0;
+   top: 0; 
+}
+.swal-content .swal2-actions button[type='button'] {
+    min-width: 80px;    
+}

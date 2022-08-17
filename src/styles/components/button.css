@@ -60,7 +60,8 @@ a.btn-rds {
 }
 button.btn-rds[disabled],
 a.btn-rds[disabled] {
-    background-color: var(--disabled);
+    opacity: .5;
+    pointer-events: none;
 } 
 button.btn-rds.btn-secondary,
 a.btn-rds.btn-secondary {
