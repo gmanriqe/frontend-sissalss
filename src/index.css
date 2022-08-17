@@ -39,6 +39,7 @@
 /* Layout */
 @import url("./styles/layout/general.css");
 /* Components */
+@import url("./styles/components/sweetalert.css");
 @import url("./styles/components/flatpickr.css");
 @import url("./styles/components/breadcrumbs.css");
 @import url("./styles/components/button.css");

@@ -1,11 +1,13 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { ROLE } from '../config';
 
+// 1ero: Paquetes terceros
+import jwtDecode from 'jwt-decode';
+
 // 2do: Paquetes de mi propio proyecto
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 
-// 2do: Paquetes de mi propio proyecto
 import Clients from '../views/Client';
 import AddClient from "../views/Client/AddClient";
 import Quote from '../views/Quote';
@@ -13,9 +15,9 @@ import Staff from '../views/Staff';
 import AddStaff from "../views/Staff/AddStaff";
 import EditStaff from "../views/Staff/EditStaff";
 import Dashboard from "../views/Dashboard";
+import EditProfile from '../views/Profile/EditProfile';
 import Page404 from "../views/Page404";
 import Anauthorized from "../views/Anauthorized";
-import jwtDecode from 'jwt-decode';
 
 const SissaRoutes = () => {
     let token = localStorage.getItem('token')
@@ -34,6 +36,7 @@ const SissaRoutes = () => {
                                     <Route path="/" element={<Navigate to="/dashboard" />} />
                                     <Route path="/login" element={<Navigate to="/dashboard" />} />
                                     <Route path="/dashboard" element={<Dashboard />} />
+                                    <Route path="/perfil" element={<EditProfile />} />
                                     <Route path="*" element={<Page404 />} />
                                     <Route path="/unauthorized" element={<Anauthorized />} />
 

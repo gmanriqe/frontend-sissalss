@@ -1,3 +1,19 @@
+let characterInvalid = [
+    '-',
+    '+',
+    'e',
+    'E',
+    '.',
+    ',',
+    '^',
+    '`',
+    ' ',
+    '~'
+];
+
+/*
+ * Menu options groups
+ */
 export const groupBy = (array, key) => {
     // Return the end result
     return array.reduce((result, currentValue) => {
@@ -9,3 +25,14 @@ export const groupBy = (array, key) => {
         return result;
     }, {}); // empty object is the initial value for result object
 };
+
+/*
+ * Valid only number
+ */
+export const handleValidOnlyNumber = (elemHTML) => {
+    elemHTML.addEventListener('keydown', (evt) => {
+        if (characterInvalid.includes(evt.key)) {
+            evt.preventDefault();
+        }
+    })
+}

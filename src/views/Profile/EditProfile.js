@@ -1,0 +1,270 @@
+import { useEffect, useState } from "react"
+import { Formik, Form } from "formik"
+import { Link } from "react-router-dom"
+import { APIEditEmployee } from "../../api/employees"
+import jwtDecode from "jwt-decode"
+import { CONFIG_HEADER } from '../../config/index.js'
+import { handleValidOnlyNumber } from "../../utils/utils"
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+
+const MySwal = withReactContent(Swal);
+/**
+ * Validate
+ */
+const validationForm = (values) => {
+    const errors = {}
+
+    if (values.first_name.trim().length === 0) {
+        errors.message_error_first_name = 'Campo requerido*'
+    }
+    if (values.last_name.trim().length === 0) {
+        errors.message_error_last_name = 'Campo requerido*'
+    }
+    if (values.telephone.toString().trim().length === 0) {
+        errors.message_error_telephone = 'Campo requerido*'
+    } else if (values.telephone.toString().trim().length < 7) {
+        errors.message_error_min_telephone = 'Ingresar mínimo 7 dígitos'
+    }
+
+    return errors
+}
+
+const validationFormPassword = (values) => {
+    const errors = {}
+
+    if (values.password.trim().length === 0) {
+        errors.message_error_password = 'Campo requerido*'
+    }
+    if (values.confirm_password.trim().length === 0) {
+        errors.message_error_confirm_password = 'Campo requerido*'
+    }
+    if (
+        (values.password.trim().length > 0 && values.confirm_password.trim().length > 0) &&
+        values.password.trim() !== values.confirm_password.trim()
+    ) {
+        errors.message_error_password_diferents = 'Contraseñas no coinciden*'
+    }
+
+    return errors
+}
+
+/**
+ * Handle submit form
+ */
+const handleSubmit = (values, formData) => {
+    alert(JSON.stringify(values))
+}
+
+const handleSubmitPassword = (values, formData) => {
+    alert(JSON.stringify(values))
+    MySwal.fire({
+        text: `¿Está seguro de actualizar su contraseña?`,
+        icon: 'info',
+        confirmButtonText: 'OK',
+        cancelButtonText: 'CANCELAR',
+        showCancelButton: true,
+        showCloseButton: true, // icon cerrar
+        allowOutsideClick: false, // click afuera no cierra
+        allowEscapeKey: true, // keyup esc cierra
+        customClass: { // nueva clase en el moda
+            container: 'swal-content',
+        },
+    }).then((result) => {
+        if(result.value) {
+            console.log(result)
+            // fetchin api
+        }
+    })
+}
+/**
+ * Brith date
+ */
+const handleChangeBirthDate = (formData, val) => {
+    // const $birthDate = val.length === 0 ? '' : new Date(new Date(val[0]).setHours(new Date().getHours(), new Date().getMinutes(), new Date().getSeconds()))
+    // formData.setFieldValue('birth_date', $birthDate)
+}
+
+const handleOnBlurBirthDate = (formData) => {
+    // formData.setFieldTouched('birth_date', true)
+}
+
+const EditProfile = () => {
+    const [data, setData] = useState(); // Fetching data
+
+    // token
+    let token = localStorage.getItem('token')
+    let { id } = jwtDecode(token)
+
+    useEffect(() => {
+        CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + token
+        APIEditEmployee(id, CONFIG_HEADER, (response) => {
+            let data = response.data.data
+
+            if (data.length > 0) {
+                let employe = JSON.parse(data)
+                setData(employe[0])
+                console.log(employe[0])
+            }
+        })
+
+        handleValidOnlyNumber(document.getElementById('telephone'))
+    }, [])
+
+    return (
+        <div className='main main-clients'>
+            <div className='page-header'>
+                <div className='mx-auto p-20 max-w-7xl'>
+                    <nav className='page-breadcrumb'>
+                        <ul>
+                            <li><Link to='/perfil'>Configuración</Link></li>
+                        </ul>
+                    </nav>
+                    <h1 className='text-3xl md:text-4xl font-extrabold mt-8'>MI PERFIL</h1>
+                </div>
+            </div>
+            <div className='mx-auto p-20 max-w-7xl'>
+                <div className='card p-20 overflow-x-auto relative'>
+                    <h2 className='text-2xl font-bold mb-7'>INFORMACIÓN PERSONAL</h2>
+                    <Formik
+                        enableReinitialize={true}
+                        initialValues={{
+                            first_name: data ? data.first_name : '',
+                            last_name: data ? data.last_name : '',
+                            telephone: data ? data.telephone : '',
+                        }}
+                        validate={validationForm}
+                        onSubmit={handleSubmit}
+                    >
+                        {(formData) => (
+                            <Form className='grid grid-cols-2 gap-20' noValidate>
+                                <div className='form-group col-span-2 md:col-span-1'>
+                                    <label htmlFor='nombres'>Nombres</label>
+                                    <input
+                                        id='nombres'
+                                        type='text'
+                                        className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
+                                        {...formData.getFieldProps("first_name")}
+                                    />
+                                    {/* {formData.touched.first_name && formData.errors.message_error_first_name ? ( */}
+                                    {formData.errors.message_error_first_name ? (
+                                        <div style={{ color: "red" }}>{formData.errors.message_error_first_name}</div>
+                                    ) : null}
+                                </div>
+                                <div className='form-group col-span-2 md:col-span-1'>
+                                    <label htmlFor='apellidos'>Apellidos</label>
+                                    <input
+                                        id='apellidos'
+                                        type='text'
+                                        className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
+                                        {...formData.getFieldProps("last_name")}
+                                    />
+                                    {formData.errors.message_error_last_name ? (
+                                        <div style={{ color: "red" }}>{formData.errors.message_error_last_name}</div>
+                                    ) : null}
+                                </div>
+                                <div className='form-group col-span-2 md:col-span-1'>
+                                    <label htmlFor='telephone'>Teléfono</label>
+                                    <input
+                                        id='telephone'
+                                        type='number'
+                                        className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
+                                        tabIndex={0}
+                                        {...formData.getFieldProps("telephone")}
+                                    />
+                                    {formData.errors.message_error_telephone ? (
+                                        <div style={{ color: "red" }}>{formData.errors.message_error_telephone}</div>
+                                    ) : null}
+                                    {formData.errors.message_error_min_telephone ? (
+                                        <div style={{ color: "red" }}>{formData.errors.message_error_min_telephone}</div>
+                                    ) : null}
+                                </div>
+                                {/* <div className='form-group col-span-2 md:col-span-1'>
+                                    <label htmlFor='fecha_nacimiento'>Fecha de nacimiento</label>
+                                    <Flatpickr
+                                        id='fecha_nacimiento'
+                                        className='form-control'
+                                        placeholder='SELECCIONE..'
+                                        style={{ textTransform: 'uppercase' }}
+                                        options={{
+                                            enableTime: false,
+                                            dateFormat: 'l, d M',
+                                            locale: Spanish,
+                                            minDate: "today",
+                                            disableMobile: "true"
+                                        }}
+                                        onChange={(val) => handleChangeBirthDate(formData, val)}
+                                        onBlur={() => handleOnBlurBirthDate(formData)}
+                                        defaultValue={formData.values.birth_date}
+                                    />
+                                </div> */}
+                                <div className='form-group col-span-2 text-right'>
+                                    <button type='submit' className='btn-rds'>Editar</button>
+                                </div>
+                            </Form>
+                        )}
+                    </Formik>
+                </div>
+            </div>
+
+            <div className='mx-auto p-20 max-w-7xl'>
+                <div className='card p-20 overflow-x-auto relative'>
+                    <h2 className='text-2xl font-bold mb-7'>CREDENCIALES</h2>
+                    <Formik
+                        enableReinitialize={true}
+                        initialValues={{
+                            password: '',
+                            confirm_password: '',
+                        }}
+                        validate={validationFormPassword}
+                        onSubmit={handleSubmitPassword}
+                    >
+                        {(formData) => (
+                            <Form className='grid grid-cols-2 gap-20' noValidate>
+                                <div className='form-group col-span-2 md:col-span-1'>
+                                    <label htmlFor='password'>Contraseña</label>
+                                    <input
+                                        id='password'
+                                        type='password'
+                                        className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
+                                        autoComplete="off"
+                                        {...formData.getFieldProps("password")}
+                                    />
+                                    {formData.touched.password && formData.errors.message_error_password ? (
+                                        <div style={{ color: "red" }}>{formData.errors.message_error_password}</div>
+                                    ) : null}
+                                </div>
+                                <div className='form-group col-span-2 md:col-span-1'>
+                                    <label htmlFor='confirm-password'>Confirmar contraseña</label>
+                                    <input
+                                        id='confirm-password'
+                                        type='password'
+                                        className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
+                                        autoComplete="off"
+                                        {...formData.getFieldProps("confirm_password")}
+                                    />
+                                    {formData.touched.confirm_password && formData.errors.message_error_confirm_password ? (
+                                        <div style={{ color: "red" }}>{formData.errors.message_error_confirm_password}</div>
+                                    ) : null}
+                                    {formData.touched.confirm_password && formData.errors.message_error_password_diferents ? (
+                                        <div style={{ color: "red" }}>{formData.errors.message_error_password_diferents}</div>
+                                    ) : null}
+                                </div>
+                                <div className='form-group col-span-2 text-right'>
+                                    <button type='submit' className='btn-rds' disabled>Editar</button>
+                                </div>
+                            </Form>
+                        )}
+                    </Formik>
+                </div>
+            </div>
+        </div >
+    )
+}
+
+export default EditProfile
