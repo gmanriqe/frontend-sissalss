@@ -4,11 +4,13 @@ import { Link } from "react-router-dom"
 import { APIEditEmployee } from "../../api/employees"
 import jwtDecode from "jwt-decode"
 import { CONFIG_HEADER } from '../../config/index.js'
-import { handleValidOnlyNumber } from "../../utils/utils"
+import { disableSubmit, enableSubmit, handleValidOnlyNumber } from "../../utils/utils"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
-import { useSelector } from "react-redux"
+// RTK
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchPasswordStart, fetchPasswordComplete, fetchPasswordError } from '../../redux/actions/profile'
 
 const MySwal = withReactContent(Swal);
 /**
@@ -52,13 +54,60 @@ const validationFormPassword = (values) => {
 }
 
 /**
+ * Brith date
+ */
+const handleChangeBirthDate = (formData, val) => {
+    // const $birthDate = val.length === 0 ? '' : new Date(new Date(val[0]).setHours(new Date().getHours(), new Date().getMinutes(), new Date().getSeconds()))
+    // formData.setFieldValue('birth_date', $birthDate)
+}
+
+const handleOnBlurBirthDate = (formData) => {
+    // formData.setFieldTouched('birth_date', true)
+}
+
+/**
  * Handle submit form
  */
 const handleSubmit = (values, formData) => {
-    alert(JSON.stringify(values))
+    // alert(JSON.stringify(values))
 }
 
-const handleSubmitPassword = (values, formData) => {
+/**
+ * Handle submit form password
+ */
+const handleSubmitPassword = (values, formData, dispatch) => {
+    const $btn = document.getElementById('btn-edit-password')
+
+    disableSubmit($btn)
+    dispatch(fetchPasswordStart())
+
+    setTimeout(() => {
+        MySwal.fire({
+            text: 'Hemos actualizado su contraseña.',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            showCloseButton: true, // icon cerrar
+            allowOutsideClick: false, // click outside does not close popup
+            allowEscapeKey: true, // keyup esc close popup
+            customClass: { // new class modal
+                container: 'swal-content',
+            },
+        }).then((result) => {
+            enableSubmit($btn)
+            dispatch(fetchPasswordComplete())
+            
+            // clear inputs
+            formData.resetForm() // reset formik
+        }).catch(() => {
+            enableSubmit($btn)
+            dispatch(fetchPasswordError())
+        })
+    }, 3000)
+
+    /*
+    disableSubmit($btn)
+    dispatch(fetchPasswordStart())
+
     MySwal.fire({
         text: `¿Está seguro de actualizar su contraseña?`,
         icon: 'info',
@@ -72,26 +121,23 @@ const handleSubmitPassword = (values, formData) => {
             container: 'swal-content',
         },
     }).then((result) => {
-        if(result.value) {
-            console.log(result)
+        if (result.value) {
+            setTimeout(() => {
+                alert('consumir API')
+                enableSubmit($btn)
+                dispatch(fetchPasswordComplete())
+            }, 3000)
+        } else {
+            enableSubmit($btn)
+            dispatch(fetchPasswordError())
         }
     })
-}
-/**
- * Brith date
- */
-const handleChangeBirthDate = (formData, val) => {
-    // const $birthDate = val.length === 0 ? '' : new Date(new Date(val[0]).setHours(new Date().getHours(), new Date().getMinutes(), new Date().getSeconds()))
-    // formData.setFieldValue('birth_date', $birthDate)
-}
-
-const handleOnBlurBirthDate = (formData) => {
-    // formData.setFieldTouched('birth_date', true)
+    */
 }
 
 const EditProfile = () => {
     const [data, setData] = useState(); // Fetching data
-
+    const dispatch = useDispatch()
     // token
     let token = localStorage.getItem('token')
     let { id } = jwtDecode(token)
@@ -137,7 +183,7 @@ const EditProfile = () => {
                             telephone: data ? data.telephone : '',
                         }}
                         validate={validationForm}
-                        onSubmit={handleSubmit}
+                        onSubmit={() => handleSubmit()}
                     >
                         {(formData) => (
                             <Form className='grid grid-cols-2 gap-20' noValidate>
@@ -223,7 +269,7 @@ const EditProfile = () => {
                             confirm_password: '',
                         }}
                         validate={validationFormPassword}
-                        onSubmit={handleSubmitPassword}
+                        onSubmit={(values, formData) => handleSubmitPassword(values, formData, dispatch)}
                     >
                         {(formData) => (
                             <Form className='grid grid-cols-2 gap-20' noValidate>
@@ -259,7 +305,7 @@ const EditProfile = () => {
                                     ) : null}
                                 </div>
                                 <div className='form-group col-span-2 text-right'>
-                                    <button type='submit' className='btn-rds'>
+                                    <button type='submit' className='btn-rds' id='btn-edit-password'>
                                         <em className='material-icons animate-spin'>sync</em>
                                         <strong>Editar</strong>
                                     </button>

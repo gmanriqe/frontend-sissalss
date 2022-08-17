@@ -67,6 +67,10 @@ button.btn-rds.btn-loading em,
 a.btn-rds.btn-loading em{
     display: inline-block;
 }
+button.btn-rds.btn-loading strong,
+a.btn-rds.btn-loading strong {
+    display: none;
+}
 button.btn-rds[disabled],
 a.btn-rds[disabled] {
     opacity: .5;
