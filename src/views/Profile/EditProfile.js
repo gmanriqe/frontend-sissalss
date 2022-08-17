@@ -8,6 +8,8 @@ import { handleValidOnlyNumber } from "../../utils/utils"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
+import { useSelector } from "react-redux"
+
 const MySwal = withReactContent(Swal);
 /**
  * Validate
@@ -95,6 +97,10 @@ const EditProfile = () => {
     // token
     let token = localStorage.getItem('token')
     let { id } = jwtDecode(token)
+
+    // redux
+    const profileData = useSelector(state => state.profile)
+    console.log(profileData)
 
     useEffect(() => {
         CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + token
