@@ -59,7 +59,6 @@ const handleSubmit = (values, formData) => {
 }
 
 const handleSubmitPassword = (values, formData) => {
-    alert(JSON.stringify(values))
     MySwal.fire({
         text: `¿Está seguro de actualizar su contraseña?`,
         icon: 'info',
@@ -75,7 +74,6 @@ const handleSubmitPassword = (values, formData) => {
     }).then((result) => {
         if(result.value) {
             console.log(result)
-            // fetchin api
         }
     })
 }
@@ -110,7 +108,6 @@ const EditProfile = () => {
             if (data.length > 0) {
                 let employe = JSON.parse(data)
                 setData(employe[0])
-                console.log(employe[0])
             }
         })
 
@@ -262,7 +259,10 @@ const EditProfile = () => {
                                     ) : null}
                                 </div>
                                 <div className='form-group col-span-2 text-right'>
-                                    <button type='submit' className='btn-rds' disabled>Editar</button>
+                                    <button type='submit' className='btn-rds'>
+                                        <em className='material-icons animate-spin'>sync</em>
+                                        <strong>Editar</strong>
+                                    </button>
                                 </div>
                             </Form>
                         )}

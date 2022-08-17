@@ -1,8 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {
-    password: '',
-    confirm_password: '',
+    isLoading: false,
+    data: [],
+    error: {} 
 }
 
 export const profileSlice = createSlice({
