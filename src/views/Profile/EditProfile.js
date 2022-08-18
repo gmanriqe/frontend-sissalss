@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react"
-import { Formik, Form } from "formik"
-import { Link } from "react-router-dom"
-import { APIEditEmployee } from "../../api/employees"
-import jwtDecode from "jwt-decode"
+import { useEffect, useState } from 'react'
+import { Formik, Form } from 'formik'
+import { Link } from 'react-router-dom'
+import { APIEditEmployee } from '../../api/employees'
+import jwtDecode from 'jwt-decode'
 import { CONFIG_HEADER } from '../../config/index.js'
-import { disableSubmit, enableSubmit, handleValidOnlyNumber } from "../../utils/utils"
+import { disableSubmit, enableSubmit, handleValidOnlyNumber } from '../../utils/utils'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import Flatpickr from 'react-flatpickr'
+import { Spanish } from 'flatpickr/dist/l10n/es.js'
 
 // RTK
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,7 +18,7 @@ const MySwal = withReactContent(Swal);
 /**
  * Validate
  */
-const validationForm = (values) => {
+const validationFormPersonal = (values) => {
     const errors = {}
 
     if (values.first_name.trim().length === 0) {
@@ -54,22 +56,33 @@ const validationFormPassword = (values) => {
 }
 
 /**
- * Brith date
- */
-const handleChangeBirthDate = (formData, val) => {
-    // const $birthDate = val.length === 0 ? '' : new Date(new Date(val[0]).setHours(new Date().getHours(), new Date().getMinutes(), new Date().getSeconds()))
-    // formData.setFieldValue('birth_date', $birthDate)
-}
-
-const handleOnBlurBirthDate = (formData) => {
-    // formData.setFieldTouched('birth_date', true)
-}
-
-/**
  * Handle submit form
  */
-const handleSubmit = (values, formData) => {
-    // alert(JSON.stringify(values))
+const handleSubmitPersonal = (values, formData, dispatch) => {
+    const $btn = document.getElementById('btn-edit-personal')
+
+    disableSubmit($btn)
+
+    setTimeout(() => {
+        MySwal.fire({
+            text: 'Hemos actualizado su información personal.',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            showCloseButton: true, // icon cerrar
+            allowOutsideClick: false, // click outside does not close popup
+            allowEscapeKey: true, // keyup esc close popup
+            customClass: { // new class modal
+                container: 'swal-content',
+            },
+        }).then((result) => {
+            enableSubmit($btn)
+            // dispatch(fetchPasswordComplete())
+
+        }).catch(() => {
+            enableSubmit($btn)
+            // dispatch(fetchPasswordError())
+        })
+    }, 3000)
 }
 
 /**
@@ -144,7 +157,6 @@ const EditProfile = () => {
 
     // redux
     const profileData = useSelector(state => state.profile)
-    console.log(profileData)
 
     useEffect(() => {
         CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + token
@@ -181,36 +193,36 @@ const EditProfile = () => {
                             first_name: data ? data.first_name : '',
                             last_name: data ? data.last_name : '',
                             telephone: data ? data.telephone : '',
+                            birth_date: data ? data.birth_date : '',
                         }}
-                        validate={validationForm}
-                        onSubmit={() => handleSubmit()}
+                        validate={validationFormPersonal}
+                        onSubmit={(values, formData) => handleSubmitPersonal(values, formData, dispatch)}
                     >
                         {(formData) => (
                             <Form className='grid grid-cols-2 gap-20' noValidate>
                                 <div className='form-group col-span-2 md:col-span-1'>
-                                    <label htmlFor='nombres'>Nombres</label>
+                                    <label htmlFor='first_name'>Nombres</label>
                                     <input
-                                        id='nombres'
+                                        id='first_name'
                                         type='text'
                                         className='form-control'
                                         style={{ textTransform: 'uppercase' }}
-                                        {...formData.getFieldProps("first_name")}
+                                        {...formData.getFieldProps('first_name')}
                                     />
-                                    {/* {formData.touched.first_name && formData.errors.message_error_first_name ? ( */}
-                                    {formData.errors.message_error_first_name ? (
+                                    {formData.touched.first_name && formData.errors.message_error_first_name ? (
                                         <div style={{ color: "red" }}>{formData.errors.message_error_first_name}</div>
                                     ) : null}
                                 </div>
                                 <div className='form-group col-span-2 md:col-span-1'>
-                                    <label htmlFor='apellidos'>Apellidos</label>
+                                    <label htmlFor='last_name'>Apellidos</label>
                                     <input
-                                        id='apellidos'
+                                        id='last_name'
                                         type='text'
                                         className='form-control'
                                         style={{ textTransform: 'uppercase' }}
                                         {...formData.getFieldProps("last_name")}
                                     />
-                                    {formData.errors.message_error_last_name ? (
+                                    {formData.touched.last_name && formData.errors.message_error_last_name ? (
                                         <div style={{ color: "red" }}>{formData.errors.message_error_last_name}</div>
                                     ) : null}
                                 </div>
@@ -224,34 +236,35 @@ const EditProfile = () => {
                                         tabIndex={0}
                                         {...formData.getFieldProps("telephone")}
                                     />
-                                    {formData.errors.message_error_telephone ? (
+                                    {formData.touched.telephone && formData.errors.message_error_telephone ? (
                                         <div style={{ color: "red" }}>{formData.errors.message_error_telephone}</div>
                                     ) : null}
-                                    {formData.errors.message_error_min_telephone ? (
+                                    {formData.touched.telephone && formData.errors.message_error_min_telephone ? (
                                         <div style={{ color: "red" }}>{formData.errors.message_error_min_telephone}</div>
                                     ) : null}
                                 </div>
-                                {/* <div className='form-group col-span-2 md:col-span-1'>
-                                    <label htmlFor='fecha_nacimiento'>Fecha de nacimiento</label>
+                                <div className='form-group col-span-2 md:col-span-1'>
+                                    <label htmlFor='birth_day'>Fec. nacimiento</label>
                                     <Flatpickr
-                                        id='fecha_nacimiento'
+                                        id='birth_day'
                                         className='form-control'
                                         placeholder='SELECCIONE..'
-                                        style={{ textTransform: 'uppercase' }}
+                                        style={{textTransform: 'uppercase'}}
                                         options={{
                                             enableTime: false,
                                             dateFormat: 'l, d M',
                                             locale: Spanish,
-                                            minDate: "today",
                                             disableMobile: "true"
                                         }}
-                                        onChange={(val) => handleChangeBirthDate(formData, val)}
-                                        onBlur={() => handleOnBlurBirthDate(formData)}
-                                        defaultValue={formData.values.birth_date}
+                                        value= {formData.values.birth_date}
+                                        disabled='disabled'
                                     />
-                                </div> */}
+                                </div>
                                 <div className='form-group col-span-2 text-right'>
-                                    <button type='submit' className='btn-rds'>Editar</button>
+                                    <button type='submit' className='btn-rds' id='btn-edit-personal'>
+                                        <em className='material-icons animate-spin'>sync</em>
+                                        <strong>Editar</strong>
+                                    </button>
                                 </div>
                             </Form>
                         )}
