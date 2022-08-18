@@ -14,3 +14,17 @@ export const ROLE = {
     ADMIN: 'ADMIN',
     CASHIER: 'CASHIER'
 }
+export const SEX = [
+    {
+        'label': 'SELECCIONE..',
+        'value': ''
+    },
+    {
+        'label': 'FEMENINO',
+        'value': '0'
+    },
+    {
+        'label': 'MASCULINO',
+        'value': '1'
+    },
+]

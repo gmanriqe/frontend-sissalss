@@ -8,8 +8,8 @@ import jwtDecode from 'jwt-decode';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 
-import Clients from '../views/Client';
-import AddClient from "../views/Client/AddClient";
+import Clients from '../views/Customer';
+import AddClient from "../views/Customer/AddCustomer";
 import Quote from '../views/Quote';
 import Staff from '../views/Staff';
 import AddStaff from "../views/Staff/AddStaff";
