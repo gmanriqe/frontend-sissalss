@@ -2,7 +2,7 @@ import { useEffect, useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import jwt_decode from "jwt-decode";
 import { MenuContext } from '../../context/MenuContent';
-import avatar from '../../assets/images/avatar_profile.jpeg';
+import avatar from '../../assets/images/avatar_profile.png';
 import { APIPermissionsMenu } from '../../api/menu';
 import { groupBy } from '../../utils/utils';
 

@@ -1,3 +1,7 @@
-.user-profile .user-profile__mail{
-    color: var(--secondary-color)
+.user-profile .user-profile__mail {
+  color: var(--secondary-color);
+}
+.user-profile figure {
+  border-radius: 50%;
+  background-color: var(--alter-small-color);
 }

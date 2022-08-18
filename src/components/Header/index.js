@@ -1,6 +1,6 @@
 import { useEffect, useContext, useState } from 'react';
 import { Link } from 'react-router-dom'
-import avatar from '../../assets/images/avatar_profile.jpeg';
+import avatar from '../../assets/images/avatar_profile.png';
 import { MenuContext } from '../../context/MenuContent';
 import { AuthContext } from '../../context/AuthContent';
 import jwtDecode from 'jwt-decode';
@@ -44,9 +44,9 @@ const Header = () => {
                             <span className='font-semibold flex muiltr-1niqtu4-MuiTypography-root'>{`${decoded.first_name} ${decoded.last_name}`}</span>
                             <p className='text-11 font-medium capitalize'>{`${decoded.role}`}</p>
                         </div>
-                        <div className='profile-header__image md:mx-4'>
+                        <figure className='profile-header__image md:mx-4'>
                             <img className='' alt='avatar' src={avatar} />
-                        </div>
+                        </figure>
                     </button>
                     <div className='profile-header__opt'>
                         <ul>
