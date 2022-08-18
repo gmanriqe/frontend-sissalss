@@ -2,6 +2,7 @@
     position: relative;
 }
 .profile-header .profile-header__image {
+    background-color: var(--border-color);
     position: relative;
     display: flex;
     align-items: center;
