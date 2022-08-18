@@ -12,30 +12,10 @@ import { APIListTypeDocument } from '../../api/type_document'
 import { CONFIG_HEADER, SEX } from '../../config/index.js'
 
 const breadcrumbs = [{ names: 'Clientes', link: '/clientes' }, { names: 'Nuevo', link: '/clientes/nuevo' }]
-
-/*
- * Type document
- */
-/*
-const handleChangetypeDocument = (formData, selectedOption) => {
-    formData.setFieldValue('type_document', selectedOption)
-
-    const $nroDocument = document.getElementById('nro-documento')
-    if (selectedOption.value !== '') {
-        $nroDocument.removeAttribute('disabled')
-    } else {
-        $nroDocument.setAttribute('disabled', 'disabled')
-    }
-
-}
-const handleOnBlurTypeDocument = (formData) => {
-    formData.setFieldTouched('type_document', true)
-}
-*/
-
 /*
  * Brith date
  */
+/*
 const handleChangeBirthDate = (formData, val) => {
     const $birthDate = val.length === 0 ? '' : new Date(new Date(val[0]).setHours(new Date().getHours(), new Date().getMinutes(), new Date().getSeconds()))
     // formData.setFieldValue('birth_date', selectedDate)
@@ -44,6 +24,60 @@ const handleChangeBirthDate = (formData, val) => {
 
 const handleOnBlurBirthDate = (formData) => {
     formData.setFieldTouched('birth_date', true)
+}
+*/
+
+/*
+ * Type document
+ */
+const checkCharacter = (selectedOption) => {
+    let $numberDocument = document.getElementById('number-document')
+
+    switch (selectedOption) {
+        case 'CARNET DE EXTRANJERIA':
+            $numberDocument.setAttribute('data-maxlength', '10')
+            break;
+        case 'DNI':
+            $numberDocument.setAttribute('data-maxlength', '8')
+            break;
+        case 'LIBRETA ELECTORAL':
+            $numberDocument.setAttribute('data-maxlength', '12')
+            break;
+        case 'PARTIDA DE NACIMIENTO':
+            $numberDocument.setAttribute('data-maxlength', '10')
+            break;
+        case 'PASAPORTE':
+            $numberDocument.setAttribute('data-maxlength', '12')
+            break;
+    }
+}
+
+const handleKeypressNumberDocument = (evt) => {
+    const $numberDocument = evt.target
+    const maxLength = $numberDocument.dataset.maxlength
+
+    if($numberDocument.value.length > maxLength){
+        evt.target.value = $numberDocument.value.substring(0, maxLength)
+    }
+}
+
+const handleChangetypeDocument = (selectedOption, formData) => {
+    const $nroDocument = document.getElementById('number-document')
+
+    formData.setFieldValue('type_document', selectedOption)
+    formData.setFieldValue('number_document', '')
+
+    if (selectedOption.value === '') {
+        $nroDocument.setAttribute('disabled', 'disabled')
+        
+    } else {
+        $nroDocument.removeAttribute('disabled')
+        checkCharacter(selectedOption.label, formData)
+    }
+
+}
+const handleOnBlurTypeDocument = (formData) => {
+    formData.setFieldTouched('type_document', true)
 }
 
 /*
@@ -68,13 +102,16 @@ const validateFormCustomer = (values) => {
     if (values.last_name.trim().length === 0) {
         errors.message_error_last_name = 'Campo requerido*'
     }
+    if (values.type_document.value !== '' && values.number_document.toString().trim().length === 0) {
+        errors.message_error_number_document = 'Campo requerido*'
+    }
     if (values.telephone.toString().trim().length === 0) {
         errors.message_error_telephone = 'Campo requerido*'
     }
     if (values.email.trim().length === 0) {
         errors.message_error_email = 'Campo requerido*'
     }
-    if (values.sex.value.length === 0) {
+    if (values.sex.value === '') {
         errors.message_error_sex = 'Campo requerido*'
     }
     if (values.observation.trim().length === 0) {
@@ -95,8 +132,8 @@ const AddClient = () => {
     let [typeDocuments, setTypeDocuments] = useState([])
 
     useEffect(() => {
-        CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + localStorage.getItem('token')
         const fetchingTypeDocuments = () => {
+            CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + localStorage.getItem('token')
             APIListTypeDocument(CONFIG_HEADER, (response) => {
 
                 let data = response.data.data
@@ -107,13 +144,13 @@ const AddClient = () => {
                         return item.state === 1
                     })
 
-                    let typeDocument = []
-                    typeDocument.unshift({ label: 'SELECCIONE..', value: '' })
+                    let listTypeDocuments = []
+                    listTypeDocuments.unshift({ label: 'SELECCIONE..', value: '' })
                     filter.map((item) => (
-                        typeDocument.push({ label: item.name_document, value: item.id })
+                        listTypeDocuments.push({ label: item.name_document, value: item.id.toString() })
                     ))
 
-                    setTypeDocuments(typeDocument)
+                    setTypeDocuments(listTypeDocuments)
                 }
             })
         }
@@ -130,8 +167,8 @@ const AddClient = () => {
                         initialValues={{
                             first_name: '',
                             last_name: '',
-                            // type_document: { label: 'SELECCIONE..', value: '', },
-                            // number_document: '',
+                            type_document: typeDocuments[0],
+                            number_document: '',
                             telephone: '',
                             email: '',
                             // birth_date: '',
@@ -173,22 +210,22 @@ const AddClient = () => {
                                         ) : null
                                     }
                                 </div>
-                                {/* <div className='form-group col-span-2 md:col-span-1'>
+                                <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='type-document'>Tipo documento</label>
                                     <Select
                                         id='type-document'
                                         className='form-control'
                                         style={{ textTransform: 'uppercase' }}
-                                        name='type_document'
+                                        // name='type_document'
                                         placeholder=''
                                         options={typeDocuments}
-                                        onChange={(val) => handleChangetypeDocument(formData, val)}
+                                        onChange={(val) => handleChangetypeDocument(val, formData)}
                                         onBlur={() => handleOnBlurTypeDocument(formData)}
-                                        defaultValue={formData.values.type_document}
+                                        value={formData.values.type_document}
                                     />
                                     {
-                                        formData.errors.type_document?.value ? (
-                                            <ErrorsMessage errors={formData.errors.type_document?.value} />
+                                        formData.touched.type_document && formData.errors.type_document ? (
+                                            <ErrorsMessage errors={formData.errors.type_document} />
                                         ) : null
                                     }
                                 </div>
@@ -200,14 +237,15 @@ const AddClient = () => {
                                         className='form-control'
                                         style={{ textTransform: 'uppercase' }}
                                         disabled='disabled'
+                                        onInput={(evt) => handleKeypressNumberDocument(evt)}
                                         {...formData.getFieldProps("number_document")}
                                     />
                                     {
-                                        formData.touched.number_document && formData.errors.number_document ? (
-                                            <ErrorsMessage errors={formData.errors.number_document} />
+                                        formData.touched.number_document && formData.errors.message_error_number_document ? (
+                                            <ErrorsMessage errors={formData.errors.message_error_number_document} />
                                         ) : null
                                     }
-                                </div> */}
+                                </div>
                                 <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='telephone'>Teléfono</label>
                                     <input
@@ -267,15 +305,15 @@ const AddClient = () => {
                                         id='sex'
                                         className='form-control'
                                         style={{ textTransform: 'uppercase' }}
-                                        name='sex'
+                                        // name='sex'
                                         placeholder=''
                                         options={SEX}
                                         onChange={(val) => handleChangeSex(val, formData)}
                                         onBlur={() => handleOnBlurSex(formData)}
-                                        defaultValue={formData.values.sex}
+                                        value={formData.values.sex}
 
                                     />
-                                    { formData.touched.sex && formData.errors.message_error_sex ? (
+                                    {formData.touched.sex && formData.errors.message_error_sex ? (
                                         <ErrorsMessage errors={formData.errors.message_error_sex} />
                                     ) : null}
                                 </div>
