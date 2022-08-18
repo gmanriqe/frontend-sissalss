@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { APIEditEmployee } from '../../api/employees'
 import jwtDecode from 'jwt-decode'
 import { CONFIG_HEADER } from '../../config/index.js'
-import { disableSubmit, enableSubmit, handleValidOnlyNumber } from '../../utils/utils'
+import { disableSubmit, enableSubmit, validOnlyNumber } from '../../utils/utils'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import Flatpickr from 'react-flatpickr'
@@ -169,7 +169,7 @@ const EditProfile = () => {
             }
         })
 
-        handleValidOnlyNumber(document.getElementById('telephone'))
+        validOnlyNumber(document.getElementById('telephone'))
     }, [])
 
     return (

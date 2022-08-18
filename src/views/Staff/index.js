@@ -48,7 +48,7 @@ const Staff = () => {
     // Handler remove row
     const handleSwalRemove = (evt, ID) => {
         MySwal.fire({
-            text: `ID = ${ID}. DESEA ELIMINAR ESTE REGISTRO?.`,
+            text: `ID = ${ID}. ¿DESEA RESTRINGIR EL ACCESO AL SISTEMA AL USUARIO?`,
             icon: 'warning',
             confirmButtonText: 'OK',
             showCloseButton: true, // icon cerrar
@@ -111,8 +111,8 @@ const Staff = () => {
                                         ))}
                                         <td>
                                             <div className='flex flex-inline justify-center'>
+                                                <button className='btn-opt' onClick={(evt) => handleSwalRemove(evt, row.original.id)}><span className="material-icons">key_off</span></button>
                                                 <Link to={`/personal/editar/${row.original.id}`} className='btn-opt'><span className="material-icons">open_in_new</span></Link>
-                                                <button className='btn-opt' onClick={(evt) => handleSwalRemove(evt, row.original.id)}><span className="material-icons">delete</span></button>
                                             </div>
                                         </td>
                                     </tr>

@@ -10,6 +10,7 @@ import PageHeader from '../../components/PageHeader';
 import ErrorsMessage from '../../components/ErrorMessage';
 import { APIListTypeDocument } from '../../api/type_document'
 import { CONFIG_HEADER, SEX } from '../../config/index.js'
+import { validOnlyNumber, validateEmail } from '../../utils/utils';
 
 const breadcrumbs = [{ names: 'Clientes', link: '/clientes' }, { names: 'Nuevo', link: '/clientes/nuevo' }]
 /*
@@ -52,15 +53,9 @@ const checkCharacter = (selectedOption) => {
     }
 }
 
-const handleKeypressNumberDocument = (evt) => {
-    const $numberDocument = evt.target
-    const maxLength = $numberDocument.dataset.maxlength
-
-    if($numberDocument.value.length > maxLength){
-        evt.target.value = $numberDocument.value.substring(0, maxLength)
-    }
-}
-
+/*
+ * Valid type number
+ */
 const handleChangetypeDocument = (selectedOption, formData) => {
     const $nroDocument = document.getElementById('number-document')
 
@@ -69,7 +64,6 @@ const handleChangetypeDocument = (selectedOption, formData) => {
 
     if (selectedOption.value === '') {
         $nroDocument.setAttribute('disabled', 'disabled')
-        
     } else {
         $nroDocument.removeAttribute('disabled')
         checkCharacter(selectedOption.label, formData)
@@ -110,6 +104,8 @@ const validateFormCustomer = (values) => {
     }
     if (values.email.trim().length === 0) {
         errors.message_error_email = 'Campo requerido*'
+    } else if (validateEmail(values.email.trim()) === false) {
+        errors.message_error_email_formato = 'Formato no es válido*'
     }
     if (values.sex.value === '') {
         errors.message_error_sex = 'Campo requerido*'
@@ -237,7 +233,7 @@ const AddClient = () => {
                                         className='form-control'
                                         style={{ textTransform: 'uppercase' }}
                                         disabled='disabled'
-                                        onInput={(evt) => handleKeypressNumberDocument(evt)}
+                                        onKeyDown={(evt) => validOnlyNumber(evt)}
                                         {...formData.getFieldProps("number_document")}
                                     />
                                     {
@@ -253,6 +249,7 @@ const AddClient = () => {
                                         type='number'
                                         className='form-control'
                                         style={{ textTransform: 'uppercase' }}
+                                        onKeyDown={(evt) => validOnlyNumber(evt)}
                                         {...formData.getFieldProps("telephone")}
                                     />
                                     {
@@ -273,6 +270,11 @@ const AddClient = () => {
                                     {
                                         formData.touched.email && formData.errors.message_error_email ? (
                                             <ErrorsMessage errors={formData.errors.message_error_email} />
+                                        ) : null
+                                    }
+                                    {
+                                        formData.touched.email && formData.errors.message_error_email_formato ? (
+                                            <ErrorsMessage errors={formData.errors.message_error_email_formato} />
                                         ) : null
                                     }
                                 </div>

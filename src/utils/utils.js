@@ -1,4 +1,5 @@
-let characterInvalid = [
+const exceptThisSymbols = [
+    '',
     '-',
     '+',
     'e',
@@ -7,8 +8,7 @@ let characterInvalid = [
     ',',
     '^',
     '`',
-    ' ',
-    '~'
+    '~',
 ];
 
 /*
@@ -29,12 +29,18 @@ export const groupBy = (array, key) => {
 /*
  * Valid only number
  */
-export const handleValidOnlyNumber = (elemHTML) => {
-    elemHTML.addEventListener('keydown', (evt) => {
-        if (characterInvalid.includes(evt.key)) {
-            evt.preventDefault();
-        }
-    })
+export const validOnlyNumber = (evt) => {
+    if (exceptThisSymbols.includes(evt.key)) {
+        evt.preventDefault()
+    }
+}
+
+/*
+ * Valid email
+ */
+export const validateEmail = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
 }
 
 /**
@@ -45,7 +51,6 @@ export const enableSubmit = (elemHTML) => {
     elemHTML.classList.remove('btn-loading')
     elemHTML.removeAttribute('disabled')
 }
-
 export const disableSubmit = (elemHTML) => {
     // const elemHTML = document.getElementById('btn-search')
     elemHTML.classList.add('btn-loading')
