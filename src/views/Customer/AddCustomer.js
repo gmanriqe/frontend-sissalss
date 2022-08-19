@@ -10,24 +10,33 @@ import PageHeader from '../../components/PageHeader';
 import ErrorsMessage from '../../components/ErrorMessage';
 import { APIListTypeDocument } from '../../api/type_document'
 import { CONFIG_HEADER, SEX } from '../../config/index.js'
-import { validOnlyNumber, validateEmail, validateLengthTypeDocument } from '../../utils/utils';
+import {
+    disableSubmit,
+    enableSubmit,
+    validOnlyNumber,
+    validateEmail,
+    validateLengthTypeDocument
+} from '../../utils/utils';
+// Day
+import * as dayjs from 'dayjs'
+// Swal
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
+dayjs.locale('es') // use Spanish locale globally
+const MySwal = withReactContent(Swal);
 const breadcrumbs = [{ names: 'Clientes', link: '/clientes' }, { names: 'Nuevo', link: '/clientes/nuevo' }]
 let global_length_type_document = null
 /*
  * Brith date
  */
-/*
-const handleChangeBirthDate = (formData, val) => {
-    const $birthDate = val.length === 0 ? '' : new Date(new Date(val[0]).setHours(new Date().getHours(), new Date().getMinutes(), new Date().getSeconds()))
-    // formData.setFieldValue('birth_date', selectedDate)
-    formData.setFieldValue('birth_date', $birthDate)
+const handleChangeBirthDate = (val, formData) => {
+    formData.setFieldValue('birth_date', val.length === 0 ? '' : dayjs(val).format('YYYY-MM-DD'))
 }
 
 const handleOnBlurBirthDate = (formData) => {
     formData.setFieldTouched('birth_date', true)
 }
-*/
 
 /*
  * Type document
@@ -61,7 +70,7 @@ const handlerInputNumberDocument = (evt) => {
     const $numberDocument = evt.target
     const maxLength = $numberDocument.dataset.maxlength
     global_length_type_document = maxLength
-    if($numberDocument.value.length > maxLength){
+    if ($numberDocument.value.length > maxLength) {
         evt.target.value = $numberDocument.value.substring(0, maxLength)
     }
 }
@@ -109,18 +118,21 @@ const validateFormCustomer = (values) => {
     if (values.last_name.trim().length === 0) {
         errors.message_error_last_name = 'Campo requerido*'
     }
-    if (values.type_document.value !== '' && values.number_document.toString().trim().length === 0) {
-        errors.message_error_number_document = 'Campo requerido*'
-    } else if (values.type_document.value !== '' && validateLengthTypeDocument(values.number_document.toString().trim(), global_length_type_document) === false ) {
-        errors.message_error_number_document_length = 'Número de documento inválido*'
-    }
     if (values.telephone.toString().trim().length === 0) {
         errors.message_error_telephone = 'Campo requerido*'
+    }
+    if (values.birth_date.trim().length === 0) {
+        errors.message_error_birth_date = 'Campo requerido*'
+    }
+    if (values.type_document.value !== '' && values.number_document.toString().trim().length === 0) {
+        errors.message_error_number_document = 'Campo requerido*'
+    } else if (values.type_document.value !== '' && validateLengthTypeDocument(values.number_document.toString().trim(), global_length_type_document) === false) {
+        errors.message_error_number_document_length = 'Número de documento inválido*'
     }
     if (values.email.trim().length === 0) {
         errors.message_error_email = 'Campo requerido*'
     } else if (validateEmail(values.email.trim()) === false) {
-        errors.message_error_email_formato = 'Formato no es válido*'
+        errors.message_error_email_formato = 'Formato inválido*'
     }
     if (values.sex.value === '') {
         errors.message_error_sex = 'Campo requerido*'
@@ -136,7 +148,32 @@ const validateFormCustomer = (values) => {
  * Handle submit form
  */
 const handleSubmitCustomer = (values, formData) => {
-    alert(JSON.stringify(values))
+    // console.log(values)
+    // console.log(formData)
+
+    const $btn = document.getElementById('btn-save')
+
+    disableSubmit($btn)
+
+    setTimeout(() => {
+        MySwal.fire({
+            text: 'Se guardo el cliente con éxito.',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            showCloseButton: true, // icon cerrar
+            allowOutsideClick: false, // click outside does not close popup
+            allowEscapeKey: true, // keyup esc close popup
+            customClass: { // new class modal
+                container: 'swal-content',
+            },
+        }).then((result) => {
+            enableSubmit($btn)
+            // clear inputs
+            formData.resetForm() // reset formik
+        }).catch(() => {
+            enableSubmit($btn)
+        })
+    }, 3000)
 }
 
 const AddClient = () => {
@@ -182,12 +219,12 @@ const AddClient = () => {
                             number_document: '',
                             telephone: '',
                             email: '',
-                            // birth_date: '',
+                            birth_date: '',
                             sex: SEX[0],
                             observation: '',
                         }}
                         validate={validateFormCustomer}
-                        onSubmit={handleSubmitCustomer}
+                        onSubmit={(val, formData) => handleSubmitCustomer(val, formData)}
                     >
                         {(formData) => (
                             <Form className='grid grid-cols-2 gap-20' noValidate>
@@ -243,7 +280,7 @@ const AddClient = () => {
                                         id='birth-date'
                                         className='form-control'
                                         placeholder='SELECCIONE..'
-                                        style={{textTransform: 'uppercase'}}
+                                        style={{ textTransform: 'uppercase' }}
                                         options={{
                                             enableTime: false,
                                             // dateFormat: 'l, d M',
@@ -252,12 +289,13 @@ const AddClient = () => {
                                             // minDate: "today",
                                             disableMobile: "true"
                                         }}
-                                        // onChange={(val) => handleChangeBirthDate(formData, val)}
-                                        // onBlur={() => handleOnBlurBirthDate(formData)}
+                                        onChange={(val) => handleChangeBirthDate(val, formData)}
+                                        onBlur={() => handleOnBlurBirthDate(formData)}
                                     />
+                                    {console.log(formData)}
                                     {
-                                        formData.touched.birth_date && formData.errors.birth_date ? (
-                                            <ErrorsMessage errors={formData.errors.birth_date} />
+                                        formData.touched.birth_date && formData.errors.message_error_birth_date ? (
+                                            <ErrorsMessage errors={formData.errors.message_error_birth_date} />
                                         ) : null
                                     }
                                 </div>
@@ -350,7 +388,6 @@ const AddClient = () => {
                                             <ErrorsMessage errors={formData.errors.message_error_number_document} />
                                         ) : null
                                     }
-                                    {console.log(formData)}
                                     {
                                         formData.touched.type_document && formData.errors.message_error_number_document_length ? (
                                             <ErrorsMessage errors={formData.errors.message_error_number_document_length} />
@@ -358,7 +395,7 @@ const AddClient = () => {
                                     }
                                 </div>
                                 <div className='form-group col-span-2 text-right'>
-                                    <button type='submit' className='btn-rds'>
+                                    <button type='submit' className='btn-rds' id='btn-save'>
                                         <em className='material-icons animate-spin'>sync</em>
                                         <strong>Guardar</strong>
                                     </button>
