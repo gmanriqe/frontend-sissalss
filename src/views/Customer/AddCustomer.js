@@ -10,9 +10,10 @@ import PageHeader from '../../components/PageHeader';
 import ErrorsMessage from '../../components/ErrorMessage';
 import { APIListTypeDocument } from '../../api/type_document'
 import { CONFIG_HEADER, SEX } from '../../config/index.js'
-import { validOnlyNumber, validateEmail } from '../../utils/utils';
+import { validOnlyNumber, validateEmail, validateLengthTypeDocument } from '../../utils/utils';
 
 const breadcrumbs = [{ names: 'Clientes', link: '/clientes' }, { names: 'Nuevo', link: '/clientes/nuevo' }]
+let global_length_type_document = null
 /*
  * Brith date
  */
@@ -50,6 +51,18 @@ const checkCharacter = (selectedOption) => {
         case 'PASAPORTE':
             $numberDocument.setAttribute('data-maxlength', '12')
             break;
+    }
+}
+
+/*
+ * Valid nro documento
+ */
+const handlerInputNumberDocument = (evt) => {
+    const $numberDocument = evt.target
+    const maxLength = $numberDocument.dataset.maxlength
+    global_length_type_document = maxLength
+    if($numberDocument.value.length > maxLength){
+        evt.target.value = $numberDocument.value.substring(0, maxLength)
     }
 }
 
@@ -98,6 +111,8 @@ const validateFormCustomer = (values) => {
     }
     if (values.type_document.value !== '' && values.number_document.toString().trim().length === 0) {
         errors.message_error_number_document = 'Campo requerido*'
+    } else if (values.type_document.value !== '' && validateLengthTypeDocument(values.number_document.toString().trim(), global_length_type_document) === false ) {
+        errors.message_error_number_document_length = 'Número de documento inválido*'
     }
     if (values.telephone.toString().trim().length === 0) {
         errors.message_error_telephone = 'Campo requerido*'
@@ -156,7 +171,7 @@ const AddClient = () => {
     return (
         <div className='main main-addclient'>
             <PageHeader title={'NUEVO CLIENTE'} breadcrumbs={breadcrumbs} />
-            <div className='mx-auto p-20 container'>
+            <div className='mx-auto p-20 max-w-7xl'>
                 <div className='card p-20 overflow-x-auto relative'>
                     <Formik
                         enableReinitialize={true}
@@ -207,42 +222,6 @@ const AddClient = () => {
                                     }
                                 </div>
                                 <div className='form-group col-span-2 md:col-span-1'>
-                                    <label htmlFor='type-document'>Tipo documento</label>
-                                    <Select
-                                        id='type-document'
-                                        className='form-control'
-                                        style={{ textTransform: 'uppercase' }}
-                                        // name='type_document'
-                                        placeholder=''
-                                        options={typeDocuments}
-                                        onChange={(val) => handleChangetypeDocument(val, formData)}
-                                        onBlur={() => handleOnBlurTypeDocument(formData)}
-                                        value={formData.values.type_document}
-                                    />
-                                    {
-                                        formData.touched.type_document && formData.errors.type_document ? (
-                                            <ErrorsMessage errors={formData.errors.type_document} />
-                                        ) : null
-                                    }
-                                </div>
-                                <div className='form-group col-span-2 md:col-span-1'>
-                                    <label htmlFor='number-document'>Nro. documento</label>
-                                    <input
-                                        id='number-document'
-                                        type='number'
-                                        className='form-control'
-                                        style={{ textTransform: 'uppercase' }}
-                                        disabled='disabled'
-                                        onKeyDown={(evt) => validOnlyNumber(evt)}
-                                        {...formData.getFieldProps("number_document")}
-                                    />
-                                    {
-                                        formData.touched.number_document && formData.errors.message_error_number_document ? (
-                                            <ErrorsMessage errors={formData.errors.message_error_number_document} />
-                                        ) : null
-                                    }
-                                </div>
-                                <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='telephone'>Teléfono</label>
                                     <input
                                         id='telephone'
@@ -255,6 +234,30 @@ const AddClient = () => {
                                     {
                                         formData.touched.telephone && formData.errors.message_error_telephone ? (
                                             <ErrorsMessage errors={formData.errors.message_error_telephone} />
+                                        ) : null
+                                    }
+                                </div>
+                                <div className='form-group col-span-2 md:col-span-1'>
+                                    <label htmlFor='birth-date'>Fecha de nacimiento</label>
+                                    <Flatpickr
+                                        id='birth-date'
+                                        className='form-control'
+                                        placeholder='SELECCIONE..'
+                                        style={{textTransform: 'uppercase'}}
+                                        options={{
+                                            enableTime: false,
+                                            // dateFormat: 'l, d M',
+                                            dateFormat: 'd M Y',
+                                            locale: Spanish,
+                                            // minDate: "today",
+                                            disableMobile: "true"
+                                        }}
+                                        // onChange={(val) => handleChangeBirthDate(formData, val)}
+                                        // onBlur={() => handleOnBlurBirthDate(formData)}
+                                    />
+                                    {
+                                        formData.touched.birth_date && formData.errors.birth_date ? (
+                                            <ErrorsMessage errors={formData.errors.birth_date} />
                                         ) : null
                                     }
                                 </div>
@@ -278,29 +281,6 @@ const AddClient = () => {
                                         ) : null
                                     }
                                 </div>
-                                {/* <div className='form-group col-span-2 md:col-span-1'>
-                                    <label htmlFor='birth-date'>Fecha de nacimiento</label>
-                                    <Flatpickr
-                                        id='birth-date'
-                                        className='form-control'
-                                        placeholder='SELECCIONE..'
-                                        style={{textTransform: 'uppercase'}}
-                                        options={{
-                                            enableTime: false,
-                                            dateFormat: 'l, d M',
-                                            locale: Spanish,
-                                            minDate: "today",
-                                            disableMobile: "true"
-                                        }}
-                                        onChange={(val) => handleChangeBirthDate(formData, val)}
-                                        onBlur={() => handleOnBlurBirthDate(formData)}
-                                    />
-                                    {
-                                        formData.touched.birth_date && formData.errors.birth_date ? (
-                                            <ErrorsMessage errors={formData.errors.birth_date} />
-                                        ) : null
-                                    }
-                                </div>*/}
                                 <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='sex'>Sexo</label>
                                     <Select
@@ -331,6 +311,49 @@ const AddClient = () => {
                                     {
                                         formData.touched.observation && formData.errors.message_error_observation ? (
                                             <ErrorsMessage errors={formData.errors.message_error_observation} />
+                                        ) : null
+                                    }
+                                </div>
+                                <div className='form-group col-span-2 md:col-span-1'>
+                                    <label htmlFor='type-document'>Tipo documento</label>
+                                    <Select
+                                        id='type-document'
+                                        className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
+                                        // name='type_document'
+                                        placeholder=''
+                                        options={typeDocuments}
+                                        onChange={(val) => handleChangetypeDocument(val, formData)}
+                                        onBlur={() => handleOnBlurTypeDocument(formData)}
+                                        value={formData.values.type_document}
+                                    />
+                                    {
+                                        formData.touched.type_document && formData.errors.type_document ? (
+                                            <ErrorsMessage errors={formData.errors.type_document} />
+                                        ) : null
+                                    }
+                                </div>
+                                <div className='form-group col-span-2 md:col-span-1'>
+                                    <label htmlFor='number-document'>Nro. documento</label>
+                                    <input
+                                        id='number-document'
+                                        type='number'
+                                        className='form-control'
+                                        style={{ textTransform: 'uppercase' }}
+                                        disabled='disabled'
+                                        onKeyDown={(evt) => validOnlyNumber(evt)}
+                                        onInput={(evt) => handlerInputNumberDocument(evt)}
+                                        {...formData.getFieldProps("number_document")}
+                                    />
+                                    {
+                                        formData.touched.number_document && formData.errors.message_error_number_document ? (
+                                            <ErrorsMessage errors={formData.errors.message_error_number_document} />
+                                        ) : null
+                                    }
+                                    {console.log(formData)}
+                                    {
+                                        formData.touched.type_document && formData.errors.message_error_number_document_length ? (
+                                            <ErrorsMessage errors={formData.errors.message_error_number_document_length} />
                                         ) : null
                                     }
                                 </div>

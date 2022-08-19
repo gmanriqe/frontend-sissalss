@@ -12,6 +12,15 @@ const exceptThisSymbols = [
 ];
 
 /*
+ * 
+ */
+export const validateLengthTypeDocument = (value, maxLength) => {
+    if (value.length < maxLength) {
+        return false;
+    }
+    return true;
+}
+/*
  * Menu options groups
  */
 export const groupBy = (array, key) => {
