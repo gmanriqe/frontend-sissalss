@@ -18,6 +18,7 @@ import Dashboard from "../views/Dashboard";
 import EditProfile from '../views/Profile/EditProfile';
 import Page404 from "../views/Page404";
 import Anauthorized from "../views/Anauthorized";
+import Birthday from '../views/Birthday';
 
 const SissaRoutes = () => {
     let token = localStorage.getItem('token')
@@ -49,6 +50,7 @@ const SissaRoutes = () => {
                                     <Route path="/clientes" element={<Clients />} />
                                     <Route path="/clientes/nuevo" element={<AddClient />} />
                                     <Route path="/cita" element={<Quote />} />
+                                    <Route path="/cumpleanios" element={<Birthday />} />
                                 </Routes>
                             </div>
                         </div>
