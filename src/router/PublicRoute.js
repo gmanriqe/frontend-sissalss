@@ -9,4 +9,6 @@ export const PublicRoute = ({ children }) => {
     return (!logged)
         ? children
         : <Navigate to="/dashboard" />
+        
+    // Chequear: ruta publica no importa si el usuario esta logueado
 }

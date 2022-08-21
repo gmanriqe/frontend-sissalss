@@ -1,8 +1,6 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
-import { ROLE } from '../config';
 
-// 1ero: Paquetes terceros
-import jwtDecode from 'jwt-decode';
+// 1ero: Paquetes tercero
 
 // 2do: Paquetes de mi propio proyecto
 import Header from '../components/Header';
@@ -20,9 +18,12 @@ import Page404 from "../views/Page404";
 import Anauthorized from "../views/Anauthorized";
 import Birthday from '../views/Birthday';
 
+import { useIsAdmin } from '../hooks/index'
+
+
+
 const SissaRoutes = () => {
-    let token = localStorage.getItem('token')
-    let { role } = jwtDecode(token)
+    const isAdmin = useIsAdmin()
 
     return (
         <>
@@ -42,9 +43,9 @@ const SissaRoutes = () => {
                                     <Route path="/unauthorized" element={<Anauthorized />} />
 
                                     {/* ADMIN */}
-                                    <Route path="/personal" element={(role === ROLE.ADMIN) ? (<Staff />) : (<Navigate to="/unauthorized" />)} />
-                                    <Route path="/personal/nuevo" element={(role === ROLE.ADMIN) ? (<AddStaff />) : (<Navigate to="/unauthorized" />)} />
-                                    <Route path="/personal/editar/:id" element={(role === ROLE.ADMIN) ? (<EditStaff />) : (<Navigate to="/unauthorized" />)} />
+                                    <Route path="/personal" element={(isAdmin) ? (<Staff />) : (<Navigate to="/unauthorized" />)} />
+                                    <Route path="/personal/nuevo" element={(isAdmin) ? (<AddStaff />) : (<Navigate to="/unauthorized" />)} />
+                                    <Route path="/personal/editar/:id" element={(isAdmin) ? (<EditStaff />) : (<Navigate to="/unauthorized" />)} />
 
                                     {/*  CASHIER */}
                                     <Route path="/clientes" element={<Clients />} />
