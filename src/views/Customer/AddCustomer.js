@@ -3,6 +3,7 @@ import {
     Formik,
     Form
 } from 'formik';
+import { useNavigate } from 'react-router-dom';
 import Select from 'react-select'
 import Flatpickr from "react-flatpickr";
 import { Spanish } from 'flatpickr/dist/l10n/es.js'; // configure language for flatpickr
@@ -17,6 +18,8 @@ import {
     validateEmail,
     validateLengthTypeDocument
 } from '../../utils/utils';
+import { APIAddCustomer } from '../../api/customers';
+
 // Day
 import * as dayjs from 'dayjs'
 // Swal
@@ -31,11 +34,11 @@ let global_length_type_document = null
  * Brith date
  */
 const handleChangeBirthDate = (val, formData) => {
-    formData.setFieldValue('birth_date', val.length === 0 ? '' : dayjs(val).format('YYYY-MM-DD'))
+    formData.setFieldValue('birthday', val.length === 0 ? '' : dayjs(val).format('YYYY-MM-DD'))
 }
 
 const handleOnBlurBirthDate = (formData) => {
-    formData.setFieldTouched('birth_date', true)
+    formData.setFieldTouched('birthday', true)
 }
 
 /*
@@ -60,6 +63,8 @@ const checkCharacter = (selectedOption) => {
         case 'PASAPORTE':
             $numberDocument.setAttribute('data-maxlength', '12')
             break;
+        default:
+        // do nothing
     }
 }
 
@@ -81,8 +86,8 @@ const handlerInputNumberDocument = (evt) => {
 const handleChangetypeDocument = (selectedOption, formData) => {
     const $nroDocument = document.getElementById('number-document')
 
-    formData.setFieldValue('type_document', selectedOption)
-    formData.setFieldValue('number_document', '')
+    formData.setFieldValue('id_type_document', selectedOption)
+    formData.setFieldValue('document_number', '')
 
     if (selectedOption.value === '') {
         $nroDocument.setAttribute('disabled', 'disabled')
@@ -93,7 +98,7 @@ const handleChangetypeDocument = (selectedOption, formData) => {
 
 }
 const handleOnBlurTypeDocument = (formData) => {
-    formData.setFieldTouched('type_document', true)
+    formData.setFieldTouched('id_type_document', true)
 }
 
 /*
@@ -121,12 +126,12 @@ const validateFormCustomer = (values) => {
     if (values.telephone.toString().trim().length === 0) {
         errors.message_error_telephone = 'Campo requerido*'
     }
-    if (values.birth_date.trim().length === 0) {
+    if (values.birthday.trim().length === 0) {
         errors.message_error_birth_date = 'Campo requerido*'
     }
-    if (values.type_document.value !== '' && values.number_document.toString().trim().length === 0) {
+    if (values.id_type_document.value !== '' && values.document_number.toString().trim().length === 0) {
         errors.message_error_number_document = 'Campo requerido*'
-    } else if (values.type_document.value !== '' && validateLengthTypeDocument(values.number_document.toString().trim(), global_length_type_document) === false) {
+    } else if (values.id_type_document.value !== '' && validateLengthTypeDocument(values.document_number.toString().trim(), global_length_type_document) === false) {
         errors.message_error_number_document_length = 'Número de documento inválido*'
     }
     if (values.email.trim().length === 0) {
@@ -147,14 +152,64 @@ const validateFormCustomer = (values) => {
 /**
  * Handle submit form
  */
-const handleSubmitCustomer = (values, formData) => {
-    // console.log(values)
-    // console.log(formData)
-
+const handleSubmitCustomer = (values, navigate, formData) => {
     const $btn = document.getElementById('btn-save')
-
     disableSubmit($btn)
 
+    let data = {}
+    data.first_name = values.first_name.toUpperCase();
+    data.last_name = values.last_name.toUpperCase();
+    data.telephone = values.telephone.toString();
+    data.birthday = values.birthday;
+    data.email = values.email.toUpperCase();
+    data.sex = Number(values.sex.value);
+    data.observation = values.observation.toUpperCase();
+    data.id_type_document = values.id_type_document.value.length === '' ? null : Number(values.id_type_document.value);
+    data.document_number = values.document_number.toString().length === 0 ? null : values.document_number.toString();
+
+    CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + localStorage.getItem('token')
+    APIAddCustomer(CONFIG_HEADER, data, (response) => {
+        const message = response.data.message
+        if (response.status === 500) {
+            MySwal.fire({
+                text: `${message}`,
+                icon: 'error',
+                confirmButtonText: 'OK',
+                showCloseButton: true, // icon cerrar
+                allowOutsideClick: false, // click outside does not close popup
+                allowEscapeKey: true, // keyup esc close popup
+                customClass: { // new class modal
+                    container: 'swal-content',
+                },
+            }).then((result) => {
+                enableSubmit($btn)
+            })
+        } else if (response.status === 200) {
+            MySwal.fire({
+                text: `${message}`,
+                icon: 'success',
+                confirmButtonText: 'OK',
+                showCloseButton: true, // icon cerrar
+                allowOutsideClick: false, // click outside does not close popup
+                allowEscapeKey: true, // keyup esc close popup
+                customClass: { // new class modal
+                    container: 'swal-content',
+                },
+            }).then((result) => {
+                enableSubmit($btn)
+                // Redirect to list customers
+                navigate('/clientes')
+                /*
+                // clear inputs
+                formData.resetForm() // reset formik
+                */
+            }).catch(() => {
+                enableSubmit($btn)
+            })
+        }
+    })
+
+    /*
     setTimeout(() => {
         MySwal.fire({
             text: 'Se guardo el cliente con éxito.',
@@ -174,10 +229,12 @@ const handleSubmitCustomer = (values, formData) => {
             enableSubmit($btn)
         })
     }, 3000)
+    */
 }
 
 const AddClient = () => {
     let [typeDocuments, setTypeDocuments] = useState([])
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchingTypeDocuments = () => {
@@ -185,7 +242,6 @@ const AddClient = () => {
             APIListTypeDocument(CONFIG_HEADER, (response) => {
 
                 let data = response.data.data
-
                 if (data.length > 0) {
                     let listTypeDocument = JSON.parse(data)
                     let filter = listTypeDocument.filter((item) => {
@@ -215,16 +271,16 @@ const AddClient = () => {
                         initialValues={{
                             first_name: '',
                             last_name: '',
-                            type_document: typeDocuments[0],
-                            number_document: '',
+                            id_type_document: typeDocuments[0],
+                            document_number: '',
                             telephone: '',
                             email: '',
-                            birth_date: '',
+                            birthday: '',
                             sex: SEX[0],
                             observation: '',
                         }}
                         validate={validateFormCustomer}
-                        onSubmit={(val, formData) => handleSubmitCustomer(val, formData)}
+                        onSubmit={(val, formData) => handleSubmitCustomer(val, navigate, formData)}
                     >
                         {(formData) => (
                             <Form className='grid grid-cols-2 gap-20' noValidate>
@@ -294,7 +350,7 @@ const AddClient = () => {
                                     />
                                     {console.log(formData)}
                                     {
-                                        formData.touched.birth_date && formData.errors.message_error_birth_date ? (
+                                        formData.touched.birthday && formData.errors.message_error_birth_date ? (
                                             <ErrorsMessage errors={formData.errors.message_error_birth_date} />
                                         ) : null
                                     }
@@ -358,16 +414,16 @@ const AddClient = () => {
                                         id='type-document'
                                         className='form-control'
                                         style={{ textTransform: 'uppercase' }}
-                                        // name='type_document'
+                                        // name='id_type_document'
                                         placeholder=''
                                         options={typeDocuments}
                                         onChange={(val) => handleChangetypeDocument(val, formData)}
                                         onBlur={() => handleOnBlurTypeDocument(formData)}
-                                        value={formData.values.type_document}
+                                        value={formData.values.id_type_document}
                                     />
                                     {
-                                        formData.touched.type_document && formData.errors.type_document ? (
-                                            <ErrorsMessage errors={formData.errors.type_document} />
+                                        formData.touched.id_type_document && formData.errors.id_type_document ? (
+                                            <ErrorsMessage errors={formData.errors.id_type_document} />
                                         ) : null
                                     }
                                 </div>
@@ -381,15 +437,15 @@ const AddClient = () => {
                                         disabled='disabled'
                                         onKeyDown={(evt) => validOnlyNumber(evt)}
                                         onInput={(evt) => handlerInputNumberDocument(evt)}
-                                        {...formData.getFieldProps("number_document")}
+                                        {...formData.getFieldProps("document_number")}
                                     />
                                     {
-                                        formData.touched.number_document && formData.errors.message_error_number_document ? (
+                                        formData.touched.document_number && formData.errors.message_error_number_document ? (
                                             <ErrorsMessage errors={formData.errors.message_error_number_document} />
                                         ) : null
                                     }
                                     {
-                                        formData.touched.type_document && formData.errors.message_error_number_document_length ? (
+                                        formData.touched.id_type_document && formData.errors.message_error_number_document_length ? (
                                             <ErrorsMessage errors={formData.errors.message_error_number_document_length} />
                                         ) : null
                                     }

@@ -14,3 +14,17 @@ export const APIListClient = (CONFIG_HEADER = headerConfig, callback) => {
             }
         })
 }
+
+export const APIAddCustomer = (CONFIG_HEADER = headerConfig, formData,  callback) => {
+    const url = `${URL_API}/add_customer`
+    axios
+        .post(url, formData, CONFIG_HEADER)
+        .then(response => {
+            callback(response)
+        })
+        .catch((error) => {
+            if (error.response) {
+                callback(error.response)
+            }
+        })
+}

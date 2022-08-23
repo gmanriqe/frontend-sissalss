@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-table'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { APIListClient } from '../../api/clients.js'
+import { APIListClient } from '../../api/customers.js'
 import { CONFIG_HEADER } from '../../config/index.js'
 
 const MySwal = withReactContent(Swal);
@@ -20,7 +20,7 @@ const columns = [
     columnHelper.accessor('last_name', {
         cell: info => info.getValue(),
     }),
-    columnHelper.accessor('birth_date', {
+    columnHelper.accessor('birthday', {
         cell: info => info.getValue(),
     }),
     columnHelper.accessor('email', {
@@ -30,6 +30,9 @@ const columns = [
         cell: info => info.getValue(),
     }),
     columnHelper.accessor('sex', {
+        cell: info => info.getValue(),
+    }),
+    columnHelper.accessor('number_document', {
         cell: info => info.getValue(),
     }),
 ]
@@ -102,13 +105,14 @@ const Clients = () => {
                                     <th className='p-8'>EMAIL</th>
                                     <th className='p-8'>TELÉFONO</th>
                                     <th className='p-8'>SEXO</th>
+                                    <th className='p-8'>NRO DOCUMENTO</th>
                                     <th className='p-8'></th>
                                 </tr>
                             ))}
                         </thead>
                         <tbody>
                             {(table.getRowModel().rows.length > 0)
-                                ? table.getRowModel().rows.map(row => (
+                                ? table.getRowModel().rows.map((row) => (
                                     <tr key={row.id} className='border border-slate-300'>
                                         {row.getVisibleCells().map(cell => (
                                             <td key={cell.id} className='text-sm py-4 px-6 text-center'>
