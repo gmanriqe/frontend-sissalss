@@ -7,6 +7,9 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { APIListClient } from '../../api/customers.js'
 import { CONFIG_HEADER } from '../../config/index.js'
+// Redux RTK
+import { listCustomer } from '../../redux/slice/customer/customerSlice'
+import { useSelector, useDispatch } from 'react-redux'
 
 const MySwal = withReactContent(Swal);
 const columnHelper = createColumnHelper()
@@ -58,6 +61,9 @@ const handleSwalRemove = (evt, ID) => {
 
 const Clients = () => {
     const [data, setData] = useState([])
+    // initial the dispatch here
+    const dispatch = useDispatch();
+
 
     useEffect(() => {
         CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + localStorage.getItem('token')
@@ -66,6 +72,7 @@ const Clients = () => {
 
             if (data.length > 0) {
                 setData(JSON.parse(data))
+                dispatch(listCustomer(data))
             }
 
         })
