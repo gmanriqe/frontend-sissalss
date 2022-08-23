@@ -71,10 +71,11 @@ const Clients = () => {
             let data = response.data.data
 
             if (data.length > 0) {
-                setData(JSON.parse(data))
-                dispatch(listCustomer(data))
+                let resultData = JSON.parse(data)
+                
+                setData(resultData)
+                dispatch(listCustomer(resultData))
             }
-
         })
     }, []);
 

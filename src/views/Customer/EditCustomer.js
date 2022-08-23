@@ -3,7 +3,7 @@ import {
     Formik,
     Form
 } from 'formik';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Select from 'react-select'
 import Flatpickr from "react-flatpickr";
 import { Spanish } from 'flatpickr/dist/l10n/es.js'; // configure language for flatpickr
@@ -25,23 +25,28 @@ import * as dayjs from 'dayjs'
 // Swal
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+// Redux RTK
+import { useSelector} from 'react-redux'
 
 dayjs.locale('es') // use Spanish locale globally
 const MySwal = withReactContent(Swal);
-const breadcrumbs = [{ names: 'Clientes', link: '/clientes' }, { names: 'Nuevo', link: '/clientes/nuevo' }]
-let global_length_type_document = null
+const breadcrumbs = [{ names: 'Clientes', link: '/clientes' }]
 
 const validateFormCustomer = () => {
 
 }
 
 
-const handleSubmitCustomer = () => {}
+const handleSubmitCustomer = () => { }
 
 const EditCustomer = () => {
-    let [typeDocuments, setTypeDocuments] = useState([])
-    const navigate = useNavigate();
+    const [data, setData] = useState(); // Fetching data to Redux RTK
+    const [typeDocuments, setTypeDocuments] = useState([])
 
+    const navigate = useNavigate();
+    const { id } = useParams()
+    const listData =  useSelector(state => state.customer.data)
+    
     useEffect(() => {
         const fetchingTypeDocuments = () => {
             CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + localStorage.getItem('token')
@@ -64,26 +69,36 @@ const EditCustomer = () => {
                 }
             })
         }
+
+        const filterCustomer = () => {
+            let filterData = listData.filter((item) => {
+                return item.id === Number(id)
+            })
+
+            setData(filterData[0])
+        }
+
         fetchingTypeDocuments()
-    }, []);
+        filterCustomer()
+    }, [listData, id]);
 
     return (
         <div className='main main-addclient'>
-            <PageHeader title={'NUEVO CLIENTE'} breadcrumbs={breadcrumbs} />
+            <PageHeader title={'EDITAR'} breadcrumbs={breadcrumbs} />
             <div className='mx-auto p-20 max-w-7xl'>
                 <div className='card p-20 overflow-x-auto relative'>
                     <Formik
                         enableReinitialize={true}
                         initialValues={{
-                            first_name: '',
-                            last_name: '',
+                            first_name: data ? data.first_name : '',
+                            last_name: data ? data.last_name : '',
                             id_type_document: typeDocuments[0],
                             document_number: '',
-                            telephone: '',
-                            email: '',
-                            birthday: '',
+                            telephone: data ? data.telephone : '',
+                            email: data ? data.email : '',
+                            birthday: data ? data.birthday : '',
                             sex: SEX[0],
-                            observation: '',
+                            observation: data ? data.observation : '',
                         }}
                         validate={validateFormCustomer}
                         onSubmit={(val, formData) => handleSubmitCustomer(val, navigate, formData)}
@@ -151,10 +166,10 @@ const EditCustomer = () => {
                                             // minDate: "today",
                                             disableMobile: "true"
                                         }}
-                                        // onChange={(val) => handleChangeBirthDate(val, formData)}
-                                        // onBlur={() => handleOnBlurBirthDate(formData)}
+                                    // onChange={(val) => handleChangeBirthDate(val, formData)}
+                                    // onBlur={() => handleOnBlurBirthDate(formData)}
+                                    value = {formData.values.birthday}
                                     />
-                                    {console.log(formData)}
                                     {
                                         formData.touched.birthday && formData.errors.message_error_birth_date ? (
                                             <ErrorsMessage errors={formData.errors.message_error_birth_date} />

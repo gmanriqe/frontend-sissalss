@@ -17,10 +17,6 @@ export const customerSlice = createSlice({
 
         // actions LIST
         listCustomer: (state, action) => {
-            // return a new data
-            // console.log(action.payload)
-            console.log(state)
-
             // return [...state, action.payload]
             return {
                 ...state,
