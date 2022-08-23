@@ -7,7 +7,8 @@ import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 
 import Clients from '../views/Customer';
-import AddClient from "../views/Customer/AddCustomer";
+import AddCustomer from "../views/Customer/AddCustomer";
+import EditCustomer from "../views/Customer/EditCustomer";
 import Quote from '../views/Quote';
 import Staff from '../views/Staff';
 import AddStaff from "../views/Staff/AddStaff";
@@ -49,7 +50,8 @@ const SissaRoutes = () => {
 
                                     {/*  CASHIER */}
                                     <Route path="/clientes" element={<Clients />} />
-                                    <Route path="/clientes/nuevo" element={<AddClient />} />
+                                    <Route path="/clientes/nuevo" element={<AddCustomer />} />
+                                    <Route path="/clientes/editar/:id" element={<EditCustomer />} />
                                     <Route path="/cita" element={<Quote />} />
                                     <Route path="/cumpleanios" element={<Birthday />} />
                                 </Routes>
