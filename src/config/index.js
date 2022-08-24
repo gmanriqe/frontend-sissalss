@@ -17,14 +17,14 @@ export const ROLE = {
 export const SEX = [
     {
         'label': 'SELECCIONE..',
-        'value': ''
-    },
-    {
-        'label': 'FEMENINO',
         'value': '0'
     },
     {
-        'label': 'MASCULINO',
+        'label': 'FEMENINO',
         'value': '1'
+    },
+    {
+        'label': 'MASCULINO',
+        'value': '2'
     },
 ]

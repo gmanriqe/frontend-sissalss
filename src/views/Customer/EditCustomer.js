@@ -9,8 +9,8 @@ import Flatpickr from "react-flatpickr";
 import { Spanish } from 'flatpickr/dist/l10n/es.js'; // configure language for flatpickr
 import PageHeader from '../../components/PageHeader';
 import ErrorsMessage from '../../components/ErrorMessage';
-import { APIListTypeDocument } from '../../api/type_document'
-import { CONFIG_HEADER, SEX } from '../../config/index.js'
+import { APIListTypeDocument, fetchData } from '../../api/type_document'
+import { CONFIG_HEADER, SEX, URL_API } from '../../config/index.js'
 import {
     validOnlyNumber,
 } from '../../utils/utils';
@@ -60,7 +60,7 @@ const validateFormCustomer = () => {
 const handleSubmitCustomer = () => { }
 
 const EditCustomer = () => {
-    const [_data, _setData] = useState(); // Fetching data to Redux RTK
+    const [_data, _setData] = useState({}); // Fetching data to Redux RTK
     const [typeDocuments, setTypeDocuments] = useState([])
 
     const [selectedTypeSex, setSelectedTypeSex] = useState('')
@@ -71,59 +71,70 @@ const EditCustomer = () => {
     const listData = useSelector(state => state.customer.data)
 
     useEffect(() => {
-        const fetchingTypeDocuments = (callback) => {
+        async function fetchTypeDocument() {
+            const url = `${URL_API}/list_type_document`
             CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + localStorage.getItem('token')
-            APIListTypeDocument(CONFIG_HEADER, (response) => {
+            try {
+                const response = await fetchData(url, CONFIG_HEADER)
+                const data = await response.data.data
+                const listTypeDocument = await JSON.parse(data)
 
-                let resultData = response.data.data
-                if (resultData.length > 0) {
-                    let listTypeDocument = JSON.parse(resultData)
-                    
-                    let filterTypeDocument = listTypeDocument.filter((item) => {
-                        return item.state === 1
-                    })
+                const filterDocument = await filterTypeDocument(listTypeDocument)
+                setTypeDocuments(filterDocument) // data type document
 
-                    let listTypeDocuments = [{ label: 'SELECCIONE..', value: '' }]
-                    filterTypeDocument.map((item) => (
-                        listTypeDocuments.push({ label: item.name_document, value: item.id.toString() })
-                    ))
-
-                    setTypeDocuments(listTypeDocuments)
-                    callback(listTypeDocuments)
-                }
-            })
-        }
-
-        const filterSelectSex = async () => {
-            // Get data to Redux RTK
-            let filterData = await listData.filter((item) => {
-                return item.id === Number(id)
-            })
-            _setData(filterData[0]) // set data to state
-
-            if (filterData.length === 0) {
-                navigate('/clientes');
+                setValueTypeDocument(filterDocument)
+                setValueSex() // set value sex                
+            } finally {
+                console.log('finally')
             }
 
-            let sex = await SEX.filter(item => item.value === filterData[0].sex.toString())
+        }
+
+        // fetchingTypeDocuments()
+        fetchTypeDocument()
+    }, []);
+
+    const filterTypeDocument = (listTypeDocument) => {
+        let filterTypeDocument = listTypeDocument.filter((item) => {
+            return item.state === 1
+        })
+
+        let listTypeDocuments = [{ label: 'SELECCIONE..', value: '' }]
+
+        filterTypeDocument.map((item) => (
+            listTypeDocuments.push({ label: item.name_document, value: item.id.toString() })
+        ))
+
+        return listTypeDocuments
+    }
+
+    const setValueSex = async () => {
+        if (_data.sex === 1 || _data.sex === 2 || _data.sex === 0) {
+            let sex = await SEX.filter(item => item.value === _data.sex.toString())
             setSelectedTypeSex(sex[0])
         }
+    }
 
-        const filterSelectTypeDocument = (list) => {
-            let filterData = list.filter((item) => {
-                return item.value === _data.id_type_document?.toString()
-            })
-            
-            if (filterData.length === 0) {
-                setSelectedTypeDocument('')
-            }
-
-            setSelectedTypeDocument(filterData[0])
+    const setValueTypeDocument = async (list) => {
+        console.log(_data) 
+        if (_data.id_type_document) {
+            let typeDocument = list.filter(item => item.value === _data.id_type_document.toString())
+            setSelectedTypeDocument(typeDocument[0])
+        } else {
+            setSelectedTypeDocument({ label: 'SELECCIONE..', value: '' })
         }
+    }
 
-        fetchingTypeDocuments(filterSelectTypeDocument)
-        filterSelectSex()
-    }, [_data]);
+    const reduxFetchCustomer = async () => {
+        // Get data to Redux RTK
+        let filterData = await listData.filter((item) => {
+            return item.id === Number(id)
+        })
+
+        _setData(filterData[0]) // set data to state
+    }
+
+    reduxFetchCustomer()
 
     return (
         <div className='main main-addclient'>
@@ -135,12 +146,14 @@ const EditCustomer = () => {
                         initialValues={{
                             first_name: _data ? _data.first_name : '',
                             last_name: _data ? _data.last_name : '',
-                            id_type_document: _data ? selectedTypeDocument : { label: 'SELECCIONE..', value: '' },
+                            // id_type_document: _data ? selectedTypeDocument : { label: 'SELECCIONE..', value: '' },
+                            id_type_document: selectedTypeDocument, // selectedTypeDocument - todo se valida dentro.
                             document_number: '',
                             telephone: _data ? _data.telephone : '',
                             email: _data ? _data.email : '',
                             birthday: _data ? _data.birthday : '',
-                            sex: _data ? selectedTypeSex : '',
+                            // sex: _data ? selectedTypeSex : '',
+                            sex: selectedTypeSex,
                             observation: _data ? _data.observation ?? '' : '',
                         }}
                         validate={validateFormCustomer}
@@ -148,7 +161,7 @@ const EditCustomer = () => {
                     >
                         {(formData) => (
                             <Form className='grid grid-cols-2 gap-20' noValidate>
-                                {console.log(formData.initialValues)}
+                                {console.log(formData)}
                                 <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='first_name'>Nombres</label>
                                     <input
@@ -279,7 +292,6 @@ const EditCustomer = () => {
                                         id='type-document'
                                         className='form-control'
                                         style={{ textTransform: 'uppercase' }}
-                                        // name='id_type_document'
                                         placeholder=''
                                         options={typeDocuments}
                                         // onChange={(val) => handleChangetypeDocument(val, formData)}
