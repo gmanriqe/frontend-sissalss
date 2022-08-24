@@ -12,13 +12,8 @@ import ErrorsMessage from '../../components/ErrorMessage';
 import { APIListTypeDocument } from '../../api/type_document'
 import { CONFIG_HEADER, SEX } from '../../config/index.js'
 import {
-    disableSubmit,
-    enableSubmit,
     validOnlyNumber,
-    validateEmail,
-    validateLengthTypeDocument
 } from '../../utils/utils';
-import { APIAddCustomer } from '../../api/customers';
 
 // Day
 import * as dayjs from 'dayjs'
@@ -26,61 +21,109 @@ import * as dayjs from 'dayjs'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 // Redux RTK
-import { useSelector} from 'react-redux'
+import { useSelector } from 'react-redux'
 
 dayjs.locale('es') // use Spanish locale globally
 const MySwal = withReactContent(Swal);
 const breadcrumbs = [{ names: 'Clientes', link: '/clientes' }]
 
-const validateFormCustomer = () => {
-
+/*
+ * Brith date
+ */
+const handleChangeBirthDate = (val, formData) => {
+    formData.setFieldValue('birthday', val.length === 0 ? '' : dayjs(val).format('YYYY-MM-DD'))
 }
 
+const handleOnBlurBirthDate = (formData) => {
+    formData.setFieldTouched('birthday', true)
+}
 
+/*
+ * Sex
+ */
+const handleChangeSex = (selectedOption, formData) => {
+    formData.setFieldValue('sex', selectedOption)
+}
+const handleOnBlurSex = (formData) => {
+    formData.setFieldTouched('sex', true)
+}
+
+/*
+ * Validate
+ */
+const validateFormCustomer = () => {
+}
+
+/**
+ * Handle submit form
+ */
 const handleSubmitCustomer = () => { }
 
 const EditCustomer = () => {
-    const [data, setData] = useState(); // Fetching data to Redux RTK
+    const [_data, _setData] = useState(); // Fetching data to Redux RTK
     const [typeDocuments, setTypeDocuments] = useState([])
+
+    const [selectedTypeSex, setSelectedTypeSex] = useState('')
+    const [selectedTypeDocument, setSelectedTypeDocument] = useState('')
 
     const navigate = useNavigate();
     const { id } = useParams()
-    const listData =  useSelector(state => state.customer.data)
-    
+    const listData = useSelector(state => state.customer.data)
+
     useEffect(() => {
-        const fetchingTypeDocuments = () => {
+        const fetchingTypeDocuments = (callback) => {
             CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + localStorage.getItem('token')
             APIListTypeDocument(CONFIG_HEADER, (response) => {
 
-                let data = response.data.data
-                if (data.length > 0) {
-                    let listTypeDocument = JSON.parse(data)
-                    let filter = listTypeDocument.filter((item) => {
+                let resultData = response.data.data
+                if (resultData.length > 0) {
+                    let listTypeDocument = JSON.parse(resultData)
+                    
+                    let filterTypeDocument = listTypeDocument.filter((item) => {
                         return item.state === 1
                     })
 
-                    let listTypeDocuments = []
-                    listTypeDocuments.unshift({ label: 'SELECCIONE..', value: '' })
-                    filter.map((item) => (
+                    let listTypeDocuments = [{ label: 'SELECCIONE..', value: '' }]
+                    filterTypeDocument.map((item) => (
                         listTypeDocuments.push({ label: item.name_document, value: item.id.toString() })
                     ))
 
                     setTypeDocuments(listTypeDocuments)
+                    callback(listTypeDocuments)
                 }
             })
         }
 
-        const filterCustomer = () => {
-            let filterData = listData.filter((item) => {
+        const filterSelectSex = async () => {
+            // Get data to Redux RTK
+            let filterData = await listData.filter((item) => {
                 return item.id === Number(id)
             })
+            _setData(filterData[0]) // set data to state
 
-            setData(filterData[0])
+            if (filterData.length === 0) {
+                navigate('/clientes');
+            }
+
+            let sex = await SEX.filter(item => item.value === filterData[0].sex.toString())
+            setSelectedTypeSex(sex[0])
         }
 
-        fetchingTypeDocuments()
-        filterCustomer()
-    }, [listData, id]);
+        const filterSelectTypeDocument = (list) => {
+            let filterData = list.filter((item) => {
+                return item.value === _data.id_type_document?.toString()
+            })
+            
+            if (filterData.length === 0) {
+                setSelectedTypeDocument('')
+            }
+
+            setSelectedTypeDocument(filterData[0])
+        }
+
+        fetchingTypeDocuments(filterSelectTypeDocument)
+        filterSelectSex()
+    }, [_data]);
 
     return (
         <div className='main main-addclient'>
@@ -90,21 +133,22 @@ const EditCustomer = () => {
                     <Formik
                         enableReinitialize={true}
                         initialValues={{
-                            first_name: data ? data.first_name : '',
-                            last_name: data ? data.last_name : '',
-                            id_type_document: typeDocuments[0],
+                            first_name: _data ? _data.first_name : '',
+                            last_name: _data ? _data.last_name : '',
+                            id_type_document: _data ? selectedTypeDocument : { label: 'SELECCIONE..', value: '' },
                             document_number: '',
-                            telephone: data ? data.telephone : '',
-                            email: data ? data.email : '',
-                            birthday: data ? data.birthday : '',
-                            sex: SEX[0],
-                            observation: data ? data.observation : '',
+                            telephone: _data ? _data.telephone : '',
+                            email: _data ? _data.email : '',
+                            birthday: _data ? _data.birthday : '',
+                            sex: _data ? selectedTypeSex : '',
+                            observation: _data ? _data.observation ?? '' : '',
                         }}
                         validate={validateFormCustomer}
                         onSubmit={(val, formData) => handleSubmitCustomer(val, navigate, formData)}
                     >
                         {(formData) => (
                             <Form className='grid grid-cols-2 gap-20' noValidate>
+                                {console.log(formData.initialValues)}
                                 <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='first_name'>Nombres</label>
                                     <input
@@ -113,6 +157,7 @@ const EditCustomer = () => {
                                         className='form-control'
                                         style={{ textTransform: 'uppercase' }}
                                         {...formData.getFieldProps("first_name")}
+                                        disabled='disabled'
                                     />
                                     {
                                         formData.touched.first_name && formData.errors.message_error_first_name ? (
@@ -128,6 +173,7 @@ const EditCustomer = () => {
                                         className='form-control'
                                         style={{ textTransform: 'uppercase' }}
                                         {...formData.getFieldProps("last_name")}
+                                        disabled='disabled'
                                     />
                                     {
                                         formData.touched.last_name && formData.errors.message_error_last_name ? (
@@ -160,15 +206,14 @@ const EditCustomer = () => {
                                         style={{ textTransform: 'uppercase' }}
                                         options={{
                                             enableTime: false,
-                                            // dateFormat: 'l, d M',
                                             dateFormat: 'd M Y',
                                             locale: Spanish,
-                                            // minDate: "today",
-                                            disableMobile: "true"
+                                            disableMobile: "true",
                                         }}
-                                    // onChange={(val) => handleChangeBirthDate(val, formData)}
-                                    // onBlur={() => handleOnBlurBirthDate(formData)}
-                                    value = {formData.values.birthday}
+                                        onChange={(val) => handleChangeBirthDate(val, formData)}
+                                        onBlur={() => handleOnBlurBirthDate(formData)}
+                                        value={formData.values.birthday}
+                                        disabled='disabled'
                                     />
                                     {
                                         formData.touched.birthday && formData.errors.message_error_birth_date ? (
@@ -202,11 +247,10 @@ const EditCustomer = () => {
                                         id='sex'
                                         className='form-control'
                                         style={{ textTransform: 'uppercase' }}
-                                        // name='sex'
                                         placeholder=''
                                         options={SEX}
-                                        // onChange={(val) => handleChangeSex(val, formData)}
-                                        // onBlur={() => handleOnBlurSex(formData)}
+                                        onChange={(val) => handleChangeSex(val, formData)}
+                                        onBlur={() => handleOnBlurSex(formData)}
                                         value={formData.values.sex}
 
                                     />
@@ -286,3 +330,5 @@ const EditCustomer = () => {
     )
 }
 export default EditCustomer;
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator
