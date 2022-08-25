@@ -22,10 +22,15 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 // Redux RTK
 import { useSelector } from 'react-redux'
+// Axios
+import axios from 'axios'
 
 dayjs.locale('es') // use Spanish locale globally
 const MySwal = withReactContent(Swal);
 const breadcrumbs = [{ names: 'Clientes', link: '/clientes' }]
+const url = `/list_type_document`
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
+// CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + localStorage.getItem('token')
 
 /*
  * Brith date
@@ -122,9 +127,6 @@ const EditCustomer = () => {
 
     useEffect(() => {
         async function fetchTypeDocument() {
-            const url = `${URL_API}/list_type_document`
-            CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + localStorage.getItem('token')
-
             try {
                 const response = await fetchData(url, CONFIG_HEADER)
                 const data = await response.data.data
@@ -275,7 +277,7 @@ const EditCustomer = () => {
                                         onChange={(val) => handleChangeSex(val, formData)}
                                         onBlur={() => handleOnBlurSex(formData)}
                                         value={formData.values.sex}
-
+                                        isDisabled
                                     />
                                     {formData.touched.sex && formData.errors.message_error_sex ? (
                                         <ErrorsMessage errors={formData.errors.message_error_sex} />
