@@ -9,10 +9,14 @@ import Flatpickr from "react-flatpickr";
 import { Spanish } from 'flatpickr/dist/l10n/es.js'; // configure language for flatpickr
 import PageHeader from '../../components/PageHeader';
 import ErrorsMessage from '../../components/ErrorMessage';
-import { APIListTypeDocument, fetchData } from '../../api/type_document'
+import { APIListTypeDocument, fetchData, fetchPostData } from '../../api/type_document'
 import { CONFIG_HEADER, SEX, URL_API } from '../../config/index.js'
 import {
+    disableSubmit,
+    enableSubmit,
     validOnlyNumber,
+    validateEmail,
+    validateLengthTypeDocument
 } from '../../utils/utils';
 
 // Day
@@ -28,7 +32,7 @@ import axios from 'axios'
 dayjs.locale('es') // use Spanish locale globally
 const MySwal = withReactContent(Swal);
 const breadcrumbs = [{ names: 'Clientes', link: '/clientes' }]
-const url = `/list_type_document`
+let global_length_type_document = null
 axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
 // CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + localStorage.getItem('token')
 
@@ -44,6 +48,66 @@ const handleOnBlurBirthDate = (formData) => {
 }
 
 /*
+ * Type document
+ */
+const checkCharacter = (selectedOption) => {
+    let $numberDocument = document.getElementById('number-document')
+
+    switch (selectedOption) {
+        case 'CARNET DE EXTRANJERIA':
+            $numberDocument.setAttribute('data-maxlength', '10')
+            break;
+        case 'DNI':
+            $numberDocument.setAttribute('data-maxlength', '8')
+            break;
+        case 'LIBRETA ELECTORAL':
+            $numberDocument.setAttribute('data-maxlength', '12')
+            break;
+        case 'PARTIDA DE NACIMIENTO':
+            $numberDocument.setAttribute('data-maxlength', '10')
+            break;
+        case 'PASAPORTE':
+            $numberDocument.setAttribute('data-maxlength', '12')
+            break;
+        default:
+        // do nothing
+    }
+}
+
+/*
+ * Valid nro documento
+ */
+const handlerInputNumberDocument = (evt) => {
+    const $numberDocument = evt.target
+    const maxLength = $numberDocument.dataset.maxlength
+    global_length_type_document = maxLength
+    if ($numberDocument.value.length > maxLength) {
+        evt.target.value = $numberDocument.value.substring(0, maxLength)
+    }
+}
+
+/*
+ * Valid type number
+ */
+const handleChangetypeDocument = (selectedOption, formData) => {
+    const $nroDocument = document.getElementById('number-document')
+
+    formData.setFieldValue('id_type_document', selectedOption)
+    formData.setFieldValue('document_number', '')
+
+    if (selectedOption.value === '') {
+        $nroDocument.setAttribute('disabled', 'disabled')
+    } else {
+        $nroDocument.removeAttribute('disabled')
+        checkCharacter(selectedOption.label, formData)
+    }
+
+}
+const handleOnBlurTypeDocument = (formData) => {
+    formData.setFieldTouched('id_type_document', true)
+}
+
+/*
  * Sex
  */
 const handleChangeSex = (selectedOption, formData) => {
@@ -56,13 +120,101 @@ const handleOnBlurSex = (formData) => {
 /*
  * Validate
  */
-const validateFormCustomer = () => {
+const validateFormCustomer = (values) => {
+    let errors = {}
+
+    if (values.first_name.trim().length === 0) {
+        errors.message_error_first_name = 'Campo requerido*'
+    }
+    if (values.last_name.trim().length === 0) {
+        errors.message_error_last_name = 'Campo requerido*'
+    }
+    if (values.telephone.toString().trim().length === 0) {
+        errors.message_error_telephone = 'Campo requerido*'
+    }
+    if (values.birthday.trim().length === 0) {
+        errors.message_error_birth_date = 'Campo requerido*'
+    }
+    if (values.id_type_document.value !== '' && values.document_number.toString().trim().length === 0) {
+        errors.message_error_number_document = 'Campo requerido*'
+    } else if (values.id_type_document.value !== '' && validateLengthTypeDocument(values.document_number.toString().trim(), global_length_type_document) === false) {
+        errors.message_error_number_document_length = 'Número de documento inválido*'
+    }
+    if (values.email.trim().length === 0) {
+        errors.message_error_email = 'Campo requerido*'
+    } else if (validateEmail(values.email.trim()) === false) {
+        errors.message_error_email_formato = 'Formato inválido*'
+    }
+    if (values.sex.value === '') {
+        errors.message_error_sex = 'Campo requerido*'
+    }
+    if (values.observation.trim().length === 0) {
+        errors.message_error_observation = 'Campo requerido*'
+    }
+
+    return errors
 }
 
 /**
  * Handle submit form
  */
-const handleSubmitCustomer = () => { }
+const handleSubmitCustomer = (values, id) => {
+    const $btn = document.getElementById('btn-save')
+    disableSubmit($btn)
+
+    let data = {}
+    data.first_name = values.first_name.toUpperCase()
+    data.last_name = values.last_name.toUpperCase()
+    data.telephone = values.telephone.toString()
+    data.birthday = values.birthday.split('T')[0]
+    data.email = values.email.toUpperCase()
+    data.sex = Number(values.sex.value)
+    data.observation = values.observation.toUpperCase()
+    data.id_type_document = values.id_type_document.value === '' ? null : Number(values.id_type_document.value)
+    data.document_number = values.document_number ? values.document_number.toString() : null
+
+    async function fetchEditCustomer() {
+        try {
+            const response = await fetchPostData(`/edit_customer/${id}`, data)
+            const message = response.data.message
+
+            if (response.status === 500) {
+                MySwal.fire({
+                    text: `${message}`,
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    showCloseButton: true, // icon cerrar
+                    allowOutsideClick: false, // click outside does not close popup
+                    allowEscapeKey: true, // keyup esc close popup
+                    customClass: { // new class modal
+                        container: 'swal-content',
+                    },
+                }).then((result) => {
+                    enableSubmit($btn)
+                })
+            } else if (response.status === 200) {
+                MySwal.fire({
+                    text: `${message}`,
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    showCloseButton: true, // icon cerrar
+                    allowOutsideClick: false, // click outside does not close popup
+                    allowEscapeKey: true, // keyup esc close popup
+                    customClass: { // new class modal
+                        container: 'swal-content',
+                    },
+                }).then((result) => {
+                    enableSubmit($btn)
+                }).catch(() => {
+                    enableSubmit($btn)
+                })
+            }
+        } finally {
+            console.log('finally')
+        }
+    }
+    fetchEditCustomer()
+}
 
 /**
  * Redux filter value
@@ -128,7 +280,7 @@ const EditCustomer = () => {
     useEffect(() => {
         async function fetchTypeDocument() {
             try {
-                const response = await fetchData(url, CONFIG_HEADER)
+                const response = await fetchData('/list_type_document', CONFIG_HEADER)
                 const data = await response.data.data
                 let listTypeDocument = await JSON.parse(data)
 
@@ -136,7 +288,7 @@ const EditCustomer = () => {
                 _setData(customer)
 
                 let filterDocument = await fnTypeDocument(listTypeDocument)
-                setStateTypeDocuments(filterDocument) // data type document
+                setStateTypeDocuments(filterDocument)
 
                 setValueSex(_data, setSelectedTypeSex) // set value sex
                 setTypeDocument(filterDocument, _data, setSelectedTypeDocument) // set value type document
@@ -159,18 +311,16 @@ const EditCustomer = () => {
                         initialValues={{
                             first_name: _data ? _data.first_name : '',
                             last_name: _data ? _data.last_name : '',
-                            // id_type_document: _data ? selectedTypeDocument : { label: 'SELECCIONE..', value: '' },
-                            id_type_document: selectedTypeDocument, // selectedTypeDocument - todo se valida dentro.
-                            document_number: '',
+                            id_type_document: selectedTypeDocument, // selectedTypeDocument - validate all into
+                            document_number: _data ? _data.document_number : '',
                             telephone: _data ? _data.telephone : '',
                             email: _data ? _data.email : '',
                             birthday: _data ? _data.birthday : '',
-                            // sex: _data ? selectedTypeSex : '',
-                            sex: selectedTypeSex,
+                            sex: selectedTypeSex, // selectedTypeSex - validate all into
                             observation: _data ? _data.observation ?? '' : '',
                         }}
                         validate={validateFormCustomer}
-                        onSubmit={(val, formData) => handleSubmitCustomer(val, navigate, formData)}
+                        onSubmit={(val, formData) => handleSubmitCustomer(val, id)}
                     >
                         {(formData) => (
                             <Form className='grid grid-cols-2 gap-20' noValidate>
@@ -306,8 +456,8 @@ const EditCustomer = () => {
                                         style={{ textTransform: 'uppercase' }}
                                         placeholder=''
                                         options={stateTypeDocuments}
-                                        // onChange={(val) => handleChangetypeDocument(val, formData)}
-                                        // onBlur={() => handleOnBlurTypeDocument(formData)}
+                                        onChange={(val) => handleChangetypeDocument(val, formData)}
+                                        onBlur={() => handleOnBlurTypeDocument(formData)}
                                         value={formData.values.id_type_document}
                                     />
                                     {
@@ -325,7 +475,7 @@ const EditCustomer = () => {
                                         style={{ textTransform: 'uppercase' }}
                                         disabled='disabled'
                                         onKeyDown={(evt) => validOnlyNumber(evt)}
-                                        // onInput={(evt) => handlerInputNumberDocument(evt)}
+                                        onInput={(evt) => handlerInputNumberDocument(evt)}
                                         {...formData.getFieldProps("document_number")}
                                     />
                                     {

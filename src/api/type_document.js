@@ -21,3 +21,8 @@ export const fetchData = async (url, configHeader) => {
     // const url = `${URL_API}/list_type_document`
     return axios.get(url, configHeader)
 }
+
+export const fetchPostData = async (url, payload) => {
+    // const url = `${URL_API}/list_type_document`
+    return axios.post(url, payload)
+}
