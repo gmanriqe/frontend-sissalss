@@ -59,9 +59,59 @@ const validateFormCustomer = () => {
  */
 const handleSubmitCustomer = () => { }
 
+/**
+ * Redux filter value
+ */
+const reduxGetCustomer = async (listData, id) => {
+    let filterData = await listData.filter((item) => item.id === Number(id))
+
+    return filterData[0] // set data to state
+}
+
+/**
+ * Set value type document
+ */
+const setValueTypeDocument = async (listTypeDocument, _data) => {
+    if (_data.id_type_document) {
+        let typeDocument = await listTypeDocument.filter(item => item.value === _data.id_type_document.toString())
+        return typeDocument[0]
+    } else {
+        return { label: 'SELECCIONE..', value: '' }
+    }
+}
+
+/**
+ * Build variable type document
+ */
+const fnTypeDocument = (listTypeDocument) => {
+    let filterTypeDocument = listTypeDocument.filter((item) => {
+        return item.state === 1
+    })
+
+    let listTypeDocuments = [{ label: 'SELECCIONE..', value: '' }]
+
+    filterTypeDocument.map((item) => (
+        listTypeDocuments.push({ label: item.name_document, value: item.id.toString() })
+    ))
+
+    return listTypeDocuments
+}
+
+const setTypeDocument = async (filterDocument, _data, setSelectedTypeDocument) => {
+    let typeDocument = await setValueTypeDocument(filterDocument, _data) // set value sex
+    setSelectedTypeDocument(typeDocument)
+}
+
+const setValueSex = async (_data, setSelectedTypeSex) => {
+    if (_data.sex === 1 || _data.sex === 2 || _data.sex === 0) {
+        let sex = await SEX.filter(item => item.value === _data.sex.toString())
+        setSelectedTypeSex(sex[0])
+    }
+}
+
 const EditCustomer = () => {
     const [_data, _setData] = useState({}); // Fetching data to Redux RTK
-    const [typeDocuments, setTypeDocuments] = useState([])
+    const [stateTypeDocuments, setStateTypeDocuments] = useState([])
 
     const [selectedTypeSex, setSelectedTypeSex] = useState('')
     const [selectedTypeDocument, setSelectedTypeDocument] = useState('')
@@ -74,67 +124,28 @@ const EditCustomer = () => {
         async function fetchTypeDocument() {
             const url = `${URL_API}/list_type_document`
             CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + localStorage.getItem('token')
+
             try {
                 const response = await fetchData(url, CONFIG_HEADER)
                 const data = await response.data.data
-                const listTypeDocument = await JSON.parse(data)
+                let listTypeDocument = await JSON.parse(data)
 
-                const filterDocument = await filterTypeDocument(listTypeDocument)
-                setTypeDocuments(filterDocument) // data type document
+                let customer = await reduxGetCustomer(listData, id)
+                _setData(customer)
 
-                setValueTypeDocument(filterDocument)
-                setValueSex() // set value sex                
+                let filterDocument = await fnTypeDocument(listTypeDocument)
+                setStateTypeDocuments(filterDocument) // data type document
+
+                setValueSex(_data, setSelectedTypeSex) // set value sex
+                setTypeDocument(filterDocument, _data, setSelectedTypeDocument) // set value type document
             } finally {
                 console.log('finally')
             }
-
         }
 
-        // fetchingTypeDocuments()
         fetchTypeDocument()
-    }, []);
 
-    const filterTypeDocument = (listTypeDocument) => {
-        let filterTypeDocument = listTypeDocument.filter((item) => {
-            return item.state === 1
-        })
-
-        let listTypeDocuments = [{ label: 'SELECCIONE..', value: '' }]
-
-        filterTypeDocument.map((item) => (
-            listTypeDocuments.push({ label: item.name_document, value: item.id.toString() })
-        ))
-
-        return listTypeDocuments
-    }
-
-    const setValueSex = async () => {
-        if (_data.sex === 1 || _data.sex === 2 || _data.sex === 0) {
-            let sex = await SEX.filter(item => item.value === _data.sex.toString())
-            setSelectedTypeSex(sex[0])
-        }
-    }
-
-    const setValueTypeDocument = async (list) => {
-        console.log(_data) 
-        if (_data.id_type_document) {
-            let typeDocument = list.filter(item => item.value === _data.id_type_document.toString())
-            setSelectedTypeDocument(typeDocument[0])
-        } else {
-            setSelectedTypeDocument({ label: 'SELECCIONE..', value: '' })
-        }
-    }
-
-    const reduxFetchCustomer = async () => {
-        // Get data to Redux RTK
-        let filterData = await listData.filter((item) => {
-            return item.id === Number(id)
-        })
-
-        _setData(filterData[0]) // set data to state
-    }
-
-    reduxFetchCustomer()
+    }, [_data, listData, id]);
 
     return (
         <div className='main main-addclient'>
@@ -161,7 +172,6 @@ const EditCustomer = () => {
                     >
                         {(formData) => (
                             <Form className='grid grid-cols-2 gap-20' noValidate>
-                                {console.log(formData)}
                                 <div className='form-group col-span-2 md:col-span-1'>
                                     <label htmlFor='first_name'>Nombres</label>
                                     <input
@@ -293,7 +303,7 @@ const EditCustomer = () => {
                                         className='form-control'
                                         style={{ textTransform: 'uppercase' }}
                                         placeholder=''
-                                        options={typeDocuments}
+                                        options={stateTypeDocuments}
                                         // onChange={(val) => handleChangetypeDocument(val, formData)}
                                         // onBlur={() => handleOnBlurTypeDocument(formData)}
                                         value={formData.values.id_type_document}
