@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 /* Variables de configuración */
 const url = 'http://localhost:8000'
 
@@ -28,3 +30,11 @@ export const SEX = [
         'value': '2'
     },
 ]
+
+export const fetchGetData = async (url) => {
+    return axios.get(url)
+}
+
+export const fetchPostData = async (url, payload) => {
+    return axios.post(url, payload)
+}

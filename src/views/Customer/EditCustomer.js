@@ -9,8 +9,8 @@ import Flatpickr from "react-flatpickr";
 import { Spanish } from 'flatpickr/dist/l10n/es.js'; // configure language for flatpickr
 import PageHeader from '../../components/PageHeader';
 import ErrorsMessage from '../../components/ErrorMessage';
-import { APIListTypeDocument, fetchData, fetchPostData } from '../../api/type_document'
-import { CONFIG_HEADER, SEX, URL_API } from '../../config/index.js'
+import { CONFIG_HEADER, SEX, fetchGetData, fetchPostData } from '../../config'
+
 import {
     disableSubmit,
     enableSubmit,
@@ -30,11 +30,10 @@ import { useSelector } from 'react-redux'
 import axios from 'axios'
 
 dayjs.locale('es') // use Spanish locale globally
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
 const MySwal = withReactContent(Swal);
 const breadcrumbs = [{ names: 'Clientes', link: '/clientes' }]
 let global_length_type_document = null
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
-// CONFIG_HEADER.headers['Authorization'] = 'Bearer ' + localStorage.getItem('token')
 
 /*
  * Brith date
@@ -42,7 +41,6 @@ axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getIte
 const handleChangeBirthDate = (val, formData) => {
     formData.setFieldValue('birthday', val.length === 0 ? '' : dayjs(val).format('YYYY-MM-DD'))
 }
-
 const handleOnBlurBirthDate = (formData) => {
     formData.setFieldTouched('birthday', true)
 }
@@ -156,9 +154,58 @@ const validateFormCustomer = (values) => {
 }
 
 /**
+ * Redux filter value
+ */
+const reduxGetCustomer = async (listData, id) => {
+    let filterData = await listData.filter((item) => item.id === Number(id))
+    return filterData[0] // set data to state
+}
+
+/**
+ * Set value type document
+ */
+const setValueTypeDocument = async (listTypeDocument, _data) => {
+    if (_data.id_type_document) {
+        let typeDocument = await listTypeDocument.filter(item => item.value === _data.id_type_document.toString())
+        return typeDocument[0]
+    } else {
+        return { label: 'SELECCIONE..', value: '' }
+    }
+}
+
+/**
+ * Build variable type document
+ */
+const fnTypeDocument = (listTypeDocument) => {
+    let filterTypeDocument = listTypeDocument.filter((item) => {
+        return item.state === 1
+    })
+
+    let listTypeDocuments = [{ label: 'SELECCIONE..', value: '' }]
+
+    filterTypeDocument.map((item) => (
+        listTypeDocuments.push({ label: item.name_document, value: item.id.toString() })
+    ))
+
+    return listTypeDocuments
+}
+
+const setTypeDocument = async (filterDocument, _data, setSelectedTypeDocument) => {
+    let typeDocument = await setValueTypeDocument(filterDocument, _data) // set value sex
+    setSelectedTypeDocument(typeDocument)
+}
+
+const setValueSex = async (_data, setSelectedTypeSex) => {
+    if (_data.sex === 1 || _data.sex === 2 || _data.sex === 0) {
+        let sex = await SEX.filter(item => item.value === _data.sex.toString())
+        setSelectedTypeSex(sex[0])
+    }
+}
+
+/**
  * Handle submit form
  */
-const handleSubmitCustomer = (values, id) => {
+ const handleSubmitCustomer = (values, id) => {
     const $btn = document.getElementById('btn-save')
     disableSubmit($btn)
 
@@ -170,7 +217,7 @@ const handleSubmitCustomer = (values, id) => {
     data.email = values.email.toUpperCase()
     data.sex = Number(values.sex.value)
     data.observation = values.observation.toUpperCase()
-    data.id_type_document = values.id_type_document.value === '' ? null : Number(values.id_type_document.value)
+    data.id_type_document = values.id_type_document.value ? Number(values.id_type_document.value) : null
     data.document_number = values.document_number ? values.document_number.toString() : null
 
     async function fetchEditCustomer() {
@@ -216,56 +263,6 @@ const handleSubmitCustomer = (values, id) => {
     fetchEditCustomer()
 }
 
-/**
- * Redux filter value
- */
-const reduxGetCustomer = async (listData, id) => {
-    let filterData = await listData.filter((item) => item.id === Number(id))
-
-    return filterData[0] // set data to state
-}
-
-/**
- * Set value type document
- */
-const setValueTypeDocument = async (listTypeDocument, _data) => {
-    if (_data.id_type_document) {
-        let typeDocument = await listTypeDocument.filter(item => item.value === _data.id_type_document.toString())
-        return typeDocument[0]
-    } else {
-        return { label: 'SELECCIONE..', value: '' }
-    }
-}
-
-/**
- * Build variable type document
- */
-const fnTypeDocument = (listTypeDocument) => {
-    let filterTypeDocument = listTypeDocument.filter((item) => {
-        return item.state === 1
-    })
-
-    let listTypeDocuments = [{ label: 'SELECCIONE..', value: '' }]
-
-    filterTypeDocument.map((item) => (
-        listTypeDocuments.push({ label: item.name_document, value: item.id.toString() })
-    ))
-
-    return listTypeDocuments
-}
-
-const setTypeDocument = async (filterDocument, _data, setSelectedTypeDocument) => {
-    let typeDocument = await setValueTypeDocument(filterDocument, _data) // set value sex
-    setSelectedTypeDocument(typeDocument)
-}
-
-const setValueSex = async (_data, setSelectedTypeSex) => {
-    if (_data.sex === 1 || _data.sex === 2 || _data.sex === 0) {
-        let sex = await SEX.filter(item => item.value === _data.sex.toString())
-        setSelectedTypeSex(sex[0])
-    }
-}
-
 const EditCustomer = () => {
     const [_data, _setData] = useState({}); // Fetching data to Redux RTK
     const [stateTypeDocuments, setStateTypeDocuments] = useState([])
@@ -280,7 +277,7 @@ const EditCustomer = () => {
     useEffect(() => {
         async function fetchTypeDocument() {
             try {
-                const response = await fetchData('/list_type_document', CONFIG_HEADER)
+                const response = await fetchGetData('/list_type_document', CONFIG_HEADER)
                 const data = await response.data.data
                 let listTypeDocument = await JSON.parse(data)
 
